@@ -176,7 +176,7 @@ const features = [
                     <ul class="space-y-1">
                         <li>📞 +255 (0) 000 000 000</li>
                         <li>✉️ info@edenire.co.tz</li>
-                        <li>📍 Dar es Salaam, Tanzania</li>
+                        <li>📍 Arusha, Tanzania</li>
                         <li>💬 WhatsApp: 24/7 enquiries</li>
                     </ul>
                 </div>
