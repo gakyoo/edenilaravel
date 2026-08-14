@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 const props = defineProps({
@@ -88,6 +88,14 @@ const statusBadgeClass = computed(() => {
 
 const listingLabel = computed(() => props.property.listing_type === 'rent' ? 'For Rent' : 'For Sale');
 
+const seoTitle = computed(() => {
+    const p = props.property;
+    // Dedupe when city and region are the same (e.g. "Arusha, Arusha")
+    const loc = [p.city, p.region].filter(Boolean);
+    const uniqueLoc = [...new Set(loc)].join(', ');
+    return `${p.title || 'Property'}${uniqueLoc ? ' - ' + uniqueLoc : ''} | ${listingLabel.value} | ${p.price_label}`;
+});
+
 const pricePerUnit = computed(() => {
     const p = props.property;
     if (!p.price) return null;
@@ -110,7 +118,6 @@ const details = computed(() => {
         { label: 'Stories', value: p.stories },
         { label: 'Parking', value: p.parking_spaces ? `${p.parking_spaces} spaces` : null },
         { label: 'Zoning', value: p.zoning_classification },
-        { label: 'Currency', value: p.currency },
         { label: 'Negotiable', value: p.is_negotiable ? 'Yes' : 'No' },
     ].filter((d) => d.value !== null && d.value !== undefined && d.value !== '');
 });
@@ -118,6 +125,11 @@ const details = computed(() => {
 
 <template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <Head :title="seoTitle">
+            <meta name="description" :content="`${property.title || 'Property'} in ${property.city || property.region || 'Tanzania'} — ${property.price_label}. ${property.description || ''}`.slice(0, 160)" />
+            <meta property="og:title" :content="seoTitle" />
+            <meta property="og:image" :content="property.primary_image_url" />
+        </Head>
         <!-- Top nav -->
         <header class="bg-white dark:bg-gray-900 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">

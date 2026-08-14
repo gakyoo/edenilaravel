@@ -11,7 +11,7 @@ class Property extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $appends = ['primary_image_url'];
+    protected $appends = ['primary_image_url', 'price_label'];
 
     protected $fillable = [
         'agent_id', 'owner_id',

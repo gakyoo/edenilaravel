@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import { Link, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 
 const props = defineProps({
@@ -100,6 +100,7 @@ function formatTZS(value) {
 
 <template>
     <AuthenticatedLayout>
+        <Head title="Dashboard — Property Management | Edenire.co.tz" />
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h2>

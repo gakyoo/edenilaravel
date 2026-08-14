@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 const props = defineProps({
@@ -27,6 +27,9 @@ const features = [
 
 <template>
     <div class="min-h-screen bg-white dark:bg-gray-950">
+        <Head title="Edenire.co.tz — Find Your Home in Tanzania | Real Estate for Sale & Rent">
+            <meta name="description" content="Tanzania's real estate platform by Edeni Realtors. Browse verified properties for sale and rent across Dar es Salaam, Arusha, Mwanza, Dodoma and Zanzibar. Enquire on WhatsApp." />
+        </Head>
         <!-- Nav -->
         <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100 dark:bg-gray-950/90 dark:border-gray-800">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 
@@ -33,6 +33,9 @@ const listings = [
 
 <template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <Head title="Browse Properties — Houses, Apartments, Land & Commercial in Tanzania">
+            <meta name="description" content="Browse houses, apartments, land, and commercial properties for sale and rent across Tanzania — Dar es Salaam, Arusha, Zanzibar and more. Enquire on WhatsApp." />
+        </Head>
         <header class="bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-950">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 <Link href="/" class="text-xl font-bold text-emerald-700 dark:text-emerald-400">Edenire.co.tz</Link>
