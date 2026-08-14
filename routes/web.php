@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Models\Property;
+use App\Models\SiteContent;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Task;
@@ -21,6 +22,7 @@ Route::get('/', function () {
 
     return Inertia::render('Landing', [
         'featured' => $featured,
+        'siteContent' => SiteContent::allMap(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
@@ -50,6 +52,10 @@ Route::middleware('auth')->group(function () {
     // Enquiry management (was admin)
     Route::patch('/dashboard/enquiries/{enquiry}', [DashboardController::class, 'updateEnquiry'])->name('dashboard.enquiries.update');
     Route::delete('/dashboard/enquiries/{enquiry}', [DashboardController::class, 'destroyEnquiry'])->name('dashboard.enquiries.destroy');
+
+    // Site content management
+    Route::get('/dashboard/content', [DashboardController::class, 'content'])->name('dashboard.content');
+    Route::post('/dashboard/content', [DashboardController::class, 'updateContent'])->name('dashboard.content.update');
 });
 
 // Legacy /admin links redirect into the merged dashboard

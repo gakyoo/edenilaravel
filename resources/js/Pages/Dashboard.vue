@@ -216,13 +216,13 @@ function timeAgo(dateStr) {
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">Total Properties</div>
-                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ metrics.total_properties }}</div>
-                        <div class="text-xs text-gray-400">{{ metrics.active_listings }} active · {{ metrics.pending_sales }} pending</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ fmt(metrics.total_properties) }}</div>
+                        <div class="text-xs text-gray-400">{{ fmt(metrics.active_listings) }} active · {{ fmt(metrics.pending_sales) }} pending</div>
                     </div>
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">Sold / Rented</div>
-                        <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ metrics.sold }}</div>
-                        <div class="text-xs text-gray-400">{{ adminKpis.off_market }} off market</div>
+                        <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ fmt(metrics.sold) }}</div>
+                        <div class="text-xs text-gray-400">{{ fmt(adminKpis.off_market) }} off market</div>
                     </div>
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">Total Value (TZS)</div>
@@ -231,8 +231,8 @@ function timeAgo(dateStr) {
                     </div>
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">Engagement</div>
-                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ metrics.total_views }}</div>
-                        <div class="text-xs text-gray-400">{{ metrics.new_enquiries }} new enquiries · {{ adminKpis.total_users }} users</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ fmt(metrics.total_views) }}</div>
+                        <div class="text-xs text-gray-400">{{ fmt(metrics.new_enquiries) }} new enquiries · {{ fmt(adminKpis.total_users) }} users</div>
                     </div>
                 </div>
 
@@ -300,7 +300,7 @@ function timeAgo(dateStr) {
                                     <div class="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                         <div class="h-full bg-[#A8E46A] rounded-full transition-all" :style="{ width: (t.views / maxViews) * 100 + '%' }"></div>
                                     </div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 w-20 text-right">{{ t.views }} views · {{ t.enquiries }} inq.</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 w-20 text-right">{{ fmt(t.views) }} views · {{ fmt(t.enquiries) }} inq.</div>
                                 </div>
                                 <div v-if="topListings.length === 0" class="text-sm text-gray-400">No views yet — share your listings!</div>
                             </div>
@@ -394,7 +394,7 @@ function timeAgo(dateStr) {
                                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total listing value</span><span class="font-semibold text-gray-900 dark:text-gray-100">{{ formatTZS(financial.total_listing_value_tzs) }}</span></div>
                                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Average price</span><span class="font-semibold text-gray-900 dark:text-gray-100">{{ formatTZS(financial.avg_price_tzs) }}</span></div>
                                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">USD listings value</span><span class="font-semibold text-gray-900 dark:text-gray-100">{{ formatTZS(adminKpis.usd_value) }}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Users</span><span class="font-semibold text-gray-900 dark:text-gray-100">{{ adminKpis.total_users }} ({{ adminKpis.agents }} agents / {{ adminKpis.buyers }} buyers)</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Users</span><span class="font-semibold text-gray-900 dark:text-gray-100">{{ fmt(adminKpis.total_users) }} ({{ fmt(adminKpis.agents) }} agents / {{ fmt(adminKpis.buyers) }} buyers)</span></div>
                             </div>
                         </div>
 

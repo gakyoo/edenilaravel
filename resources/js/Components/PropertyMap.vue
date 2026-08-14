@@ -171,8 +171,8 @@ watch(() => [props.lat, props.lng], () => {
 </script>
 
 <template>
-    <div class="relative rounded-xl overflow-hidden z-0">
-        <div ref="mapEl" :style="{ height, width: '100%' }"></div>
+    <div :style="{ height, width: '100%' }" class="relative rounded-xl overflow-hidden z-0">
+        <div ref="mapEl" class="absolute inset-0"></div>
 
         <!-- Measure toolbar -->
         <div class="absolute inset-x-2 top-2 flex flex-col gap-1.5 pointer-events-none z-[1000]">

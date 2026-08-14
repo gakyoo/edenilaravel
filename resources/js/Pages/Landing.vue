@@ -1,13 +1,35 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     featured: Array,
+    siteContent: Object,
     canLogin: Boolean,
     canRegister: Boolean,
 });
+
+// Editable site content (from SiteContent table) with safe fallbacks
+const content = computed(() => props.siteContent || {});
+const sc = (key, fallback) => content.value[key] || fallback;
+
+// Hero + SEO from content manager
+const heroEyebrow = computed(() => sc('hero_eyebrow', 'Edeni Realtors — Tanzania'));
+const heroTitle = computed(() => sc('hero_title', 'Find Your Next Home or Investment in Tanzania'));
+const heroSubtitle = computed(() => sc('hero_subtitle', 'Houses, apartments, land, and commercial properties across the country. Browse listings, enquire on WhatsApp, and work with verified agents.'));
+const seoDescription = computed(() => sc('seo_description', "Tanzania's real estate platform by Edeni Realtors. Browse verified properties for sale and rent across Dar es Salaam, Arusha, Mwanza, Dodoma and Zanzibar. Enquire on WhatsApp."));
+const contactWhatsapp = computed(() => sc('contact_whatsapp_raw', '255759210560'));
+const contactLocation = computed(() => sc('contact_location', 'Arusha, Tanzania'));
+const footerAbout = computed(() => sc('footer_about', "Tanzania's real estate platform by Edeni Realtors. Buy, sell, and rent with confidence."));
+
+const stats = computed(() => [
+    { value: sc('stat_1_value', '100+'), label: sc('stat_1_label', 'Properties listed') },
+    { value: sc('stat_2_value', '5+'), label: sc('stat_2_label', 'Regions covered') },
+    { value: sc('stat_3_value', '24/7'), label: sc('stat_3_label', 'WhatsApp enquiries') },
+]);
+
+const waLink = computed(() => `https://wa.me/${contactWhatsapp.value}?text=Hello%20Edenire%2C%20I%20would%20like%20to%20enquire%20about%20properties.`);
 
 // Landing search form
 const searchForm = ref({ q: '', type: '', listing: '', price: '' });
@@ -50,12 +72,6 @@ function submitSearch() {
     router.get('/properties', params);
 }
 
-const stats = [
-    { value: '100+', label: 'Properties listed' },
-    { value: '5+', label: 'Regions covered' },
-    { value: '24/7', label: 'WhatsApp enquiries' },
-];
-
 const features = [
     { icon: '🏠', title: 'Verified Listings', text: 'Every property is reviewed before it goes live. No fake listings, no surprises.' },
     { icon: '💬', title: 'WhatsApp Enquiries', text: 'Tanzanians live on WhatsApp — enquire about any property in one tap.' },
@@ -69,7 +85,7 @@ const features = [
 <template>
     <div class="min-h-screen bg-white dark:bg-gray-950">
         <Head title="Edenire.co.tz — Find Your Home in Tanzania | Real Estate for Sale & Rent">
-            <meta name="description" content="Tanzania's real estate platform by Edeni Realtors. Browse verified properties for sale and rent across Dar es Salaam, Arusha, Mwanza, Dodoma and Zanzibar. Enquire on WhatsApp." />
+            <meta name="description" :content="seoDescription" />
         </Head>
         <!-- Nav -->
         <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100 dark:bg-gray-950/90 dark:border-gray-800">
@@ -98,13 +114,12 @@ const features = [
         <!-- Hero -->
         <section class="bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-700 text-white">
             <div class="max-w-7xl mx-auto px-4 py-20 text-center">
-                <p class="text-emerald-200 font-medium mb-3 tracking-wide uppercase text-sm">Edeni Realtors — Tanzania</p>
+                <p class="text-emerald-200 font-medium mb-3 tracking-wide uppercase text-sm">{{ heroEyebrow }}</p>
                 <h1 class="text-4xl sm:text-5xl font-bold mb-4 leading-tight">
-                    Find Your Next Home or Investment<br class="hidden sm:block"> in Tanzania
+                    {{ heroTitle }}
                 </h1>
                 <p class="text-lg text-emerald-100 max-w-2xl mx-auto mb-8">
-                    Houses, apartments, land, and commercial properties across the country.
-                    Browse listings, enquire on WhatsApp, and work with verified agents.
+                    {{ heroSubtitle }}
                 </p>
 
                 <!-- Search form (4 fields) -->
@@ -216,7 +231,7 @@ const features = [
                 <h2 class="text-3xl font-bold mb-3">Are you selling or looking for a property?</h2>
                 <p class="text-gray-300 mb-8">Contact us here — our team will help you find the right property or buyer.</p>
                 <a
-                    href="https://wa.me/255759210560?text=Hello%20Edenire%2C%20I%20would%20like%20to%20enquire%20about%20properties."
+                    :href="waLink"
                     target="_blank"
                     class="inline-flex items-center gap-3 bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] text-xl font-bold px-10 py-4 rounded-2xl transition shadow-lg shadow-[#A8E46A]/20"
                 >
@@ -231,7 +246,7 @@ const features = [
             <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
                 <div>
                     <div class="text-lg font-bold text-white mb-2">Edenire.co.tz</div>
-                    <p class="text-gray-500">Tanzania's real estate platform by Edeni Realtors. Buy, sell, and rent with confidence.</p>
+                    <p class="text-gray-500">{{ footerAbout }}</p>
                 </div>
                 <div>
                     <div class="font-semibold text-white mb-2">Explore</div>
@@ -246,7 +261,7 @@ const features = [
                     <ul class="space-y-1">
                         <li>📞 +255 759 210 560</li>
                         <li>✉️ info@edenire.co.tz</li>
-                        <li>📍 Arusha, Tanzania</li>
+                        <li>📍 {{ contactLocation }}</li>
                         <li>💬 WhatsApp: 24/7 enquiries</li>
                     </ul>
                 </div>

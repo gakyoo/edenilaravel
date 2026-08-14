@@ -400,4 +400,40 @@ class DashboardController extends Controller
 
         return response()->streamDownload($callback, $filename, $headers);
     }
+
+    /**
+     * Site content manager — edit hero, stats, contact, footer and SEO text.
+     */
+    public function content()
+    {
+        $contents = \App\Models\SiteContent::orderBy('group')->orderBy('key')->get();
+
+        return Inertia::render('Admin/Content', [
+            'contents' => $contents,
+            'groups' => \App\Models\SiteContent::query()
+                ->select('group')
+                ->distinct()
+                ->orderBy('group')
+                ->pluck('group'),
+        ]);
+    }
+
+    public function updateContent(Request $request)
+    {
+        $data = $request->validate([
+            'contents' => 'required|array',
+            'contents.*.key' => 'required|string|max:191',
+            'contents.*.value' => 'nullable|string|max:5000',
+            'contents.*.group' => 'nullable|string|max:50',
+        ]);
+
+        foreach ($data['contents'] as $row) {
+            \App\Models\SiteContent::updateOrCreate(
+                ['key' => $row['key']],
+                ['value' => $row['value'] ?? null, 'group' => $row['group'] ?? 'general']
+            );
+        }
+
+        return back()->with('success', 'Site content saved.');
+    }
 }
