@@ -140,19 +140,19 @@ const features = [
             </div>
         </section>
 
-        <!-- CTA -->
-        <section class="bg-emerald-800 text-white py-14">
-            <div class="max-w-4xl mx-auto px-4 text-center">
-                <h2 class="text-3xl font-bold mb-3">Are you a real estate agent?</h2>
-                <p class="text-emerald-100 mb-6">List your properties, track views and enquiries, and grow your business with Edenire's agent dashboard.</p>
-                <div class="flex gap-3 justify-center flex-wrap">
-                    <Link href="/register" class="bg-white text-emerald-800 font-semibold px-8 py-3 rounded-xl hover:bg-emerald-50 transition">
-                        Create Agent Account
-                    </Link>
-                    <Link href="/login" class="border-2 border-white/40 hover:bg-white/10 font-semibold px-8 py-3 rounded-xl transition">
-                        Sign In
-                    </Link>
-                </div>
+        <!-- CTA: Contact us -->
+        <section class="bg-[#232126] dark:bg-[#0D0E0F] text-white py-14">
+            <div class="max-w-3xl mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold mb-3">Are you selling or looking for a property?</h2>
+                <p class="text-gray-300 mb-8">Contact us here — our team will help you find the right property or buyer.</p>
+                <a
+                    href="https://wa.me/255700000000?text=Hello%20Edenire%2C%20I%20would%20like%20to%20enquire%20about%20properties."
+                    target="_blank"
+                    class="inline-flex items-center gap-3 bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] text-xl font-bold px-10 py-4 rounded-2xl transition shadow-lg shadow-[#A8E46A]/20"
+                >
+                    💬 Send us a message
+                </a>
+                <p class="text-xs text-white/40 mt-4">Opens WhatsApp — fastest response</p>
             </div>
         </section>
 
