@@ -12,14 +12,13 @@ const stats = [
     { value: '100+', label: 'Properties listed' },
     { value: '5+', label: 'Regions covered' },
     { value: '24/7', label: 'WhatsApp enquiries' },
-    { value: 'TZS & USD', label: 'Multi-currency' },
 ];
 
 const features = [
     { icon: '🏠', title: 'Verified Listings', text: 'Every property is reviewed before it goes live. No fake listings, no surprises.' },
     { icon: '💬', title: 'WhatsApp Enquiries', text: 'Tanzanians live on WhatsApp — enquire about any property in one tap.' },
     { icon: '📊', title: 'Agent Analytics', text: 'Track views, enquiries, and performance with a real dashboard made for agents.' },
-    { icon: '💱', title: 'TZS & USD', text: 'Prices in shillings or dollars — with mortgage and ROI tools coming soon.' },
+    { icon: '💵', title: 'TZS Pricing', text: 'All prices in Tanzanian Shillings — clear, local, and easy to compare.' },
     { icon: '🗺️', title: 'Nationwide', text: 'From Dar es Salaam to Arusha, Mwanza, Dodoma, and Zanzibar.' },
     { icon: '🔐', title: 'Role-based Access', text: 'Separate experiences for admins, agents, buyers, sellers, and tenants.' },
 ];
@@ -70,10 +69,6 @@ const features = [
                     <Link href="/properties"
                         class="bg-white text-emerald-800 font-semibold px-8 py-3.5 rounded-xl hover:bg-emerald-50 transition text-lg">
                         🔍 Browse Properties
-                    </Link>
-                    <Link href="/register"
-                        class="border-2 border-white/40 hover:bg-white/10 text-white font-semibold px-8 py-3.5 rounded-xl transition text-lg">
-                        List Your Property
                     </Link>
                 </div>
             </div>
@@ -174,7 +169,6 @@ const features = [
                         <li><Link href="/properties" class="hover:text-emerald-400">All properties</Link></li>
                         <li><Link href="/properties" class="hover:text-emerald-400">For sale</Link></li>
                         <li><Link href="/properties" class="hover:text-emerald-400">For rent</Link></li>
-                        <li><Link href="/register" class="hover:text-emerald-400">List your property</Link></li>
                     </ul>
                 </div>
                 <div>

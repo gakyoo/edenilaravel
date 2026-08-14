@@ -89,8 +89,8 @@ const navItems = [
                 </div>
             </header>
 
-            <!-- Content (constrained width) -->
-            <main class="mx-auto w-full max-w-6xl px-4 sm:px-6 py-6">
+            <!-- Content (full width — sidebar handles the nav) -->
+            <main class="px-4 sm:px-6 py-6">
                 <slot />
             </main>
         </div>
