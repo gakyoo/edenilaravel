@@ -56,8 +56,17 @@ class Property extends Model
     {
         $primary = $this->media->firstWhere('is_primary', true) ?? $this->media->first();
 
-        // Relative path (not asset()) so it works from any host (LAN IP, localhost, domain)
-        return $primary ? '/storage/'.$primary->path : null;
+        if ($primary) {
+            // Relative path (not asset()) so it works from any host (LAN IP, localhost, domain)
+            return '/storage/'.$primary->path;
+        }
+
+        // Fallback: branded placeholder SVG per property type
+        $type = in_array($this->property_type, ['residential', 'commercial', 'industrial', 'land', 'mixed_use'])
+            ? $this->property_type
+            : 'default';
+
+        return '/img/placeholders/'.$type.'.svg';
     }
 
     public function enquiries()
