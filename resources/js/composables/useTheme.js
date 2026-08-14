@@ -2,17 +2,22 @@ import { ref, watch, onMounted } from 'vue'
 
 const STORAGE_KEY = 'edenire-theme'
 
-// 'light' | 'dark' | 'system'
-const theme = ref(localStorage.getItem(STORAGE_KEY) || 'system')
+// 'light' | 'dark' — single toggle, no system/device mode
+function initialTheme() {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    // Migrate any old 'system' value to the actual resolved preference
+    if (stored === 'system') {
+        const resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        localStorage.setItem(STORAGE_KEY, resolved)
+        return resolved
+    }
+    return stored === 'dark' ? 'dark' : 'light'
+}
+
+const theme = ref(initialTheme())
 
 function applyTheme(mode) {
-    const root = document.documentElement
-    const isDark =
-        mode === 'dark' ||
-        (mode === 'system' &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches)
-
-    root.classList.toggle('dark', isDark)
+    document.documentElement.classList.toggle('dark', mode === 'dark')
 }
 
 function setTheme(mode) {
@@ -21,19 +26,15 @@ function setTheme(mode) {
     applyTheme(mode)
 }
 
+function toggleTheme() {
+    setTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+
 function initTheme() {
     applyTheme(theme.value)
-    // Follow system changes when in 'system' mode
-    window
-        .matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', (e) => {
-            if (theme.value === 'system') {
-                document.documentElement.classList.toggle('dark', e.matches)
-            }
-        })
 }
 
 export function useTheme() {
     onMounted(initTheme)
-    return { theme, setTheme }
+    return { theme, setTheme, toggleTheme }
 }
