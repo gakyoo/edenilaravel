@@ -30,6 +30,7 @@ function next() {
 // ---------- Lightbox ----------
 const lightboxOpen = ref(false);
 const lightboxIndex = ref(0);
+const largeMapOpen = ref(false);
 
 function openLightbox(index = 0) {
     if (!images.value.length) return;
@@ -327,7 +328,13 @@ const details = computed(() => {
 
                         <!-- Map (OpenStreetMap) -->
                         <div v-if="property.latitude && property.longitude" class="bg-white dark:bg-gray-900 rounded-xl shadow p-6">
-                            <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-3">Location</h3>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-bold text-gray-900 dark:text-gray-100">Location</h3>
+                                <button @click="largeMapOpen = true"
+                                    class="text-xs font-semibold text-[#70A83C] dark:text-[#A8E46A] hover:underline px-2 py-1 border border-[#70A83C]/30 dark:border-[#A8E46A]/30 rounded-lg transition">
+                                    ⛶ View Larger Map
+                                </button>
+                            </div>
                             <PropertyMap
                                 :lat="property.latitude"
                                 :lng="property.longitude"
@@ -374,6 +381,26 @@ const details = computed(() => {
             <!-- Hint -->
             <div class="absolute top-4 left-4 text-white/40 text-xs hidden sm:block">
                 ← → navigate · Esc close
+            </div>
+        </div>
+
+        <!-- ⛶ Fullscreen map modal -->
+        <div v-if="largeMapOpen" class="fixed inset-0 z-50 bg-black/90 flex flex-col" @click.self="largeMapOpen = false">
+            <div class="flex items-center justify-between px-4 py-3 text-white">
+                <div class="font-semibold">{{ property.title || 'Property' }}</div>
+                <button @click="largeMapOpen = false" class="text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition">✕</button>
+            </div>
+            <div class="flex-1 px-4 pb-4">
+                <PropertyMap
+                    :lat="property.latitude"
+                    :lng="property.longitude"
+                    :title="property.title || 'Property'"
+                    height="100%"
+                    :zoom="16"
+                />
+            </div>
+            <div class="px-4 pb-3 text-center text-white/60 text-xs">
+                📍 {{ property.latitude }}, {{ property.longitude }} — OpenStreetMap
             </div>
         </div>
     </div>
