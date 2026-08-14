@@ -222,6 +222,30 @@ class DashboardController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        // ---------- All users (for merged admin tab) ----------
+        $allUsers = \App\Models\User::query()
+            ->withCount(['tours', 'favorites'])
+            ->when($request->filled('uq'), fn ($q) => $q->where(fn ($s) => $s
+                ->where('name', 'like', '%'.$request->uq.'%')
+                ->orWhere('email', 'like', '%'.$request->uq.'%')
+                ->orWhere('phone', 'like', '%'.$request->uq.'%')))
+            ->when($request->filled('urole'), fn ($q) => $q->where('role', $request->urole))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'phone' => $u->phone,
+                'role' => $u->role,
+                'provider' => $u->provider,
+                'email_verified_at' => $u->email_verified_at?->toDateTimeString(),
+                'created_at' => $u->created_at?->diffForHumans(),
+                'tours_count' => $u->tours_count,
+                'favorites_count' => $u->favorites_count,
+            ]);
+
         return Inertia::render('Dashboard', [
             'metrics' => $metrics,
             'activity' => $activity,
@@ -243,6 +267,8 @@ class DashboardController extends Controller
             'enquiryFilters' => $request->only(['eq', 'estatus']),
             'allTours' => $allTours,
             'tourFilters' => $request->only(['tq', 'tstatus']),
+            'allUsers' => $allUsers,
+            'userFilters' => $request->only(['uq', 'urole']),
         ]);
     }
 
@@ -379,6 +405,42 @@ class DashboardController extends Controller
         $tour->delete();
 
         return back()->with('success', 'Tour deleted.');
+    }
+
+    // ---------- User management (merged admin) ----------
+
+    public function updateUser(Request $request, \App\Models\User $user)
+    {
+        $data = $request->validate([
+            'role' => 'nullable|in:admin,agent,buyer,seller,tenant',
+            'verify' => 'nullable|boolean',
+        ]);
+
+        if (array_key_exists('role', $data) && $data['role']) {
+            // Don't let an admin demote themselves (keeps at least one admin)
+            if ($user->id === $request->user()->id && $data['role'] !== 'admin') {
+                return back()->with('error', 'You cannot change your own admin role.');
+            }
+            $user->role = $data['role'];
+        }
+
+        if (!empty($data['verify'])) {
+            $user->email_verified_at = $user->email_verified_at ?? now();
+        }
+
+        $user->save();
+
+        return back()->with('success', 'User updated.');
+    }
+
+    public function destroyUser(Request $request, \App\Models\User $user)
+    {
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        $user->delete();
+        return back()->with('success', 'User deleted.');
     }
 
     protected function validateProperty(Request $request): array

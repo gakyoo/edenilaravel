@@ -24,16 +24,19 @@ const props = defineProps({
     enquiryFilters: Object,
     allTours: Object,
     tourFilters: Object,
+    allUsers: Object,
+    userFilters: Object,
 });
 
 // ---------- Tabs (merged admin + dashboard) — deep-linkable via ?tab= ----------
 const urlTab = new URL(window.location.href).searchParams.get('tab');
-const activeTab = ref(['overview', 'properties', 'enquiries', 'tours'].includes(urlTab) ? urlTab : 'overview');
+const activeTab = ref(['overview', 'properties', 'enquiries', 'tours', 'users'].includes(urlTab) ? urlTab : 'overview');
 const tabs = [
     { key: 'overview', label: '📊 Overview' },
     { key: 'properties', label: '🏠 Properties' },
     { key: 'enquiries', label: '💬 Enquiries' },
     { key: 'tours', label: '🗓️ Tours' },
+    { key: 'users', label: '👥 Users' },
 ];
 
 const tabTitles = {
@@ -41,6 +44,7 @@ const tabTitles = {
     properties: 'Properties — Manage Listings',
     enquiries: 'Enquiries — Leads & Messages',
     tours: 'Tours — Viewing Requests',
+    users: 'Users — Accounts & Roles',
 };
 
 const pageTitle = computed(() => `${tabTitles[activeTab.value]} | Edenire.co.tz`);
@@ -119,6 +123,36 @@ function deleteTour(tour) {
         router.delete(`/dashboard/tours/${tour.id}`, { preserveScroll: true });
     }
 }
+
+// ---------- User management (merged admin) ----------
+const uQ = ref(props.userFilters.uq || '');
+const uRole = ref(props.userFilters.urole || '');
+
+function applyUserFilters() {
+    router.get('/dashboard', { utab: 'users', uq: uQ.value, urole: uRole.value }, { preserveState: true, replace: true });
+}
+
+function setUserRole(user, role) {
+    router.patch(`/dashboard/users/${user.id}`, { role }, { preserveScroll: true });
+}
+
+function verifyUser(user) {
+    router.patch(`/dashboard/users/${user.id}`, { verify: true }, { preserveScroll: true });
+}
+
+function deleteUser(user) {
+    if (confirm(`Delete user ${user.name} (${user.email})? This can't be undone.`)) {
+        router.delete(`/dashboard/users/${user.id}`, { preserveScroll: true });
+    }
+}
+
+const roleStyles = {
+    admin: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+    agent: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+    buyer: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    seller: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+    tenant: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+};
 
 // ---------- Tasks ----------
 const showTaskForm = ref(false);
@@ -643,6 +677,68 @@ function timeAgo(dateStr) {
                     <Link v-if="allTours.prev_page_url" :href="allTours.prev_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">← Prev</Link>
                     <span class="px-3 py-1.5 text-sm text-gray-500">{{ allTours.current_page }} / {{ allTours.last_page }}</span>
                     <Link v-if="allTours.next_page_url" :href="allTours.next_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">Next →</Link>
+                </div>
+            </div>
+
+            <!-- ============ TAB: USERS (merged admin) ============ -->
+            <div v-else-if="activeTab === 'users'" class="space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5 flex flex-wrap gap-2">
+                    <input v-model="uQ" @keyup.enter="applyUserFilters" type="text" placeholder="Search name, email, phone..."
+                        class="flex-1 min-w-[200px] rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                    <select v-model="uRole" @change="applyUserFilters" class="rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700">
+                        <option value="">All roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="agent">Agent</option>
+                        <option value="buyer">Buyer</option>
+                        <option value="seller">Seller</option>
+                        <option value="tenant">Tenant</option>
+                    </select>
+                </div>
+
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr class="text-left text-xs text-gray-500 dark:text-gray-400 uppercase">
+                                <th class="px-4 py-3">User</th>
+                                <th class="px-4 py-3">Role</th>
+                                <th class="px-4 py-3">Email verified</th>
+                                <th class="px-4 py-3">Activity</th>
+                                <th class="px-4 py-3">Joined</th>
+                                <th class="px-4 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="u in allUsers.data" :key="u.id" class="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <td class="px-4 py-3">
+                                    <div class="font-medium text-gray-900 dark:text-gray-100">{{ u.name }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ u.email }}<template v-if="u.phone"> · {{ u.phone }}</template></div>
+                                    <div v-if="u.provider" class="text-[10px] text-gray-400">via {{ u.provider }}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <select :value="u.role" @change="setUserRole(u, $event.target.value)"
+                                        class="rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 text-xs capitalize">
+                                        <option v-for="r in ['admin', 'agent', 'buyer', 'seller', 'tenant']" :key="r" :value="r" class="capitalize">{{ r }}</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span v-if="u.email_verified_at" class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">✓ Verified</span>
+                                    <button v-else @click="verifyUser(u)" class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 hover:brightness-95">Mark verified</button>
+                                </td>
+                                <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-xs">🗓 {{ u.tours_count }} tours · ❤️ {{ u.favorites_count }} saved</td>
+                                <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-xs">{{ u.created_at }}</td>
+                                <td class="px-4 py-3">
+                                    <button @click="deleteUser(u)" class="text-xs text-red-500 hover:text-red-700 font-semibold">Delete</button>
+                                </td>
+                            </tr>
+                            <tr v-if="allUsers.data.length === 0"><td colspan="6" class="px-4 py-8 text-center text-gray-400">No users found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-center gap-2">
+                    <Link v-if="allUsers.prev_page_url" :href="allUsers.prev_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">← Prev</Link>
+                    <span class="px-3 py-1.5 text-sm text-gray-500">{{ allUsers.current_page }} / {{ allUsers.last_page }}</span>
+                    <Link v-if="allUsers.next_page_url" :href="allUsers.next_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">Next →</Link>
                 </div>
             </div>
         </div>

@@ -80,6 +80,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Site content management
     Route::get('/dashboard/content', [DashboardController::class, 'content'])->name('dashboard.content');
     Route::post('/dashboard/content', [DashboardController::class, 'updateContent'])->name('dashboard.content.update');
+
+    // User management (admin)
+    Route::patch('/dashboard/users/{user}', [DashboardController::class, 'updateUser'])->name('dashboard.users.update');
+    Route::delete('/dashboard/users/{user}', [DashboardController::class, 'destroyUser'])->name('dashboard.users.destroy');
 });
 
 // Legacy /admin links redirect into the merged dashboard

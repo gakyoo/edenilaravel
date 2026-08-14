@@ -13,6 +13,7 @@ const adminItems = [
     { href: '/dashboard/properties/create', label: 'Add Property', icon: '➕', active: (path) => path.includes('/properties/create') },
     { href: '/dashboard?tab=enquiries', label: 'Enquiries', icon: '💬', active: (path) => path.includes('tab=enquiries') },
     { href: '/dashboard?tab=tours', label: 'Tours', icon: '🗓️', active: (path) => path.includes('tab=tours') },
+    { href: '/dashboard?tab=users', label: 'Users', icon: '👥', active: (path) => path.includes('tab=users') },
 ];
 
 const navItems = computed(() => {
