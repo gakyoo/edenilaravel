@@ -45,16 +45,20 @@ const amenityInput = ref('');
 const primaryPhoto = ref(null);
 const galleryPhotos = ref([]);
 
-function addAmenity() {
-    const v = amenityInput.value.trim().toLowerCase().replace(/\s+/g, '_');
-    if (v && !form.amenities.includes(v)) {
-        form.amenities.push(v);
-    }
-    amenityInput.value = '';
-}
+// Pickable amenities list (Tanzania-relevant)
+const amenityOptions = [
+    'security', 'water_tank', 'generator', 'solar', 'parking', 'garden',
+    'servant_quarters', 'gated_community', 'pool', 'gym', 'internet',
+    'air_conditioning', 'borehole', 'fence', 'balcony', 'beach_access',
+    'school_nearby', 'hospital_nearby', 'shopping_nearby', 'furnished',
+];
 
-function removeAmenity(a) {
-    form.amenities = form.amenities.filter((x) => x !== a);
+function toggleAmenity(a) {
+    if (form.amenities.includes(a)) {
+        form.amenities = form.amenities.filter((x) => x !== a);
+    } else {
+        form.amenities.push(a);
+    }
 }
 
 function onPrimaryChange(e) {
@@ -258,17 +262,22 @@ function submit() {
                 </div>
 
                 <!-- Amenities -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-6 space-y-3">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-6 space-y-4">
                     <h3 class="font-semibold text-gray-900 dark:text-gray-100">Amenities</h3>
-                    <div class="flex gap-2">
-                        <input v-model="amenityInput" @keyup.enter.prevent="addAmenity" type="text" placeholder="e.g. security, water_tank, generator"
-                            class="flex-1 rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
-                        <button type="button" @click="addAmenity" class="bg-gray-100 dark:bg-gray-800 px-4 rounded-lg text-sm font-semibold">Add</button>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Tick the amenities this property has:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        <label v-for="a in amenityOptions" :key="a"
+                            class="flex items-center gap-2 border dark:border-gray-700 rounded-lg px-3 py-2 text-sm cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-800"
+                            :class="form.amenities.includes(a) ? 'border-[#A8E46A] bg-[#A8E46A]/10' : ''">
+                            <input type="checkbox" :checked="form.amenities.includes(a)" @change="toggleAmenity(a)"
+                                class="rounded dark:bg-gray-800 text-[#A8E46A] focus:ring-[#A8E46A]" />
+                            <span class="capitalize text-gray-700 dark:text-gray-300">{{ a.replace(/_/g, ' ') }}</span>
+                        </label>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="a in form.amenities" :key="a" class="bg-[#A8E46A]/10 text-[#70A83C] dark:text-[#A8E46A] px-3 py-1 rounded-full text-sm capitalize">
-                            {{ a.replace(/_/g, ' ') }}
-                            <button type="button" @click="removeAmenity(a)" class="ml-1 text-red-500">×</button>
+                    <div v-if="form.amenities.length" class="flex flex-wrap gap-2 pt-1">
+                        <span v-for="a in form.amenities" :key="a"
+                            class="bg-[#A8E46A]/15 text-[#70A83C] dark:text-[#A8E46A] px-3 py-1 rounded-full text-sm capitalize">
+                            ✓ {{ a.replace(/_/g, ' ') }}
                         </span>
                     </div>
                 </div>

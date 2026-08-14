@@ -29,4 +29,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(\App\Models\Task::class);
+    }
+
+    public function properties()
+    {
+        return $this->hasMany(\App\Models\Property::class, 'agent_id');
+    }
 }

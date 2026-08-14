@@ -1,12 +1,54 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     featured: Array,
     canLogin: Boolean,
     canRegister: Boolean,
 });
+
+// Landing search form
+const searchForm = ref({ q: '', type: '', listing: '', price: '' });
+
+const typeOptions = [
+    { value: '', label: 'All property types' },
+    { value: 'residential', label: 'Residential' },
+    { value: 'commercial', label: 'Commercial' },
+    { value: 'industrial', label: 'Industrial' },
+    { value: 'land', label: 'Land' },
+    { value: 'mixed_use', label: 'Mixed use' },
+];
+
+const listingOptions = [
+    { value: '', label: 'Buy or Rent' },
+    { value: 'sale', label: 'For Sale' },
+    { value: 'rent', label: 'For Rent' },
+];
+
+const priceOptions = [
+    { value: '', label: 'Any price' },
+    { value: '0-100000000', label: 'Under 100M TZS' },
+    { value: '100000000-300000000', label: '100M – 300M TZS' },
+    { value: '300000000-600000000', label: '300M – 600M TZS' },
+    { value: '600000000-1000000000', label: '600M – 1B TZS' },
+    { value: '1000000000-', label: 'Over 1B TZS' },
+];
+
+function submitSearch() {
+    const params = {};
+    const f = searchForm.value;
+    if (f.q) params.q = f.q;
+    if (f.type) params.type = f.type;
+    if (f.listing) params.listing = f.listing;
+    if (f.price) {
+        const [min, max] = f.price.split('-');
+        if (min) params.min_price = min;
+        if (max) params.max_price = max;
+    }
+    router.get('/properties', params);
+}
 
 const stats = [
     { value: '100+', label: 'Properties listed' },
@@ -64,12 +106,41 @@ const features = [
                     Houses, apartments, land, and commercial properties across the country.
                     Browse listings, enquire on WhatsApp, and work with verified agents.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Link href="/properties"
-                        class="bg-white text-emerald-800 font-semibold px-8 py-3.5 rounded-xl hover:bg-emerald-50 transition text-lg">
-                        🔍 Browse Properties
-                    </Link>
-                </div>
+
+                <!-- Search form (4 fields) -->
+                <form @submit.prevent="submitSearch" class="bg-white rounded-2xl shadow-xl p-4 sm:p-5 max-w-4xl mx-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="lg:col-span-1">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1 text-left">Your search</label>
+                            <input v-model="searchForm.q" type="text" placeholder="Area, street, keyword..."
+                                class="w-full rounded-lg border-gray-300 text-gray-900 focus:border-[#A8E46A] focus:ring-[#A8E46A]" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1 text-left">Property type</label>
+                            <select v-model="searchForm.type" class="w-full rounded-lg border-gray-300 text-gray-900 focus:border-[#A8E46A] focus:ring-[#A8E46A]">
+                                <option v-for="t in typeOptions" :key="t.value" :value="t.value">{{ t.label }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1 text-left">Sale or rent</label>
+                            <select v-model="searchForm.listing" class="w-full rounded-lg border-gray-300 text-gray-900 focus:border-[#A8E46A] focus:ring-[#A8E46A]">
+                                <option v-for="l in listingOptions" :key="l.value" :value="l.value">{{ l.label }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1 text-left">Price range</label>
+                            <select v-model="searchForm.price" class="w-full rounded-lg border-gray-300 text-gray-900 focus:border-[#A8E46A] focus:ring-[#A8E46A]">
+                                <option v-for="p in priceOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit"
+                            class="w-full bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] font-bold px-8 py-3.5 rounded-xl transition text-lg">
+                            🔍 Search Properties
+                        </button>
+                    </div>
+                </form>
             </div>
         </section>
 
