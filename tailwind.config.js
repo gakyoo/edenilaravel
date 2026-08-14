@@ -14,21 +14,21 @@ export default {
 
     theme: {
         extend: {
-            // WhatsApp-style green palette (mapped onto the emerald scale
-            // so all existing emerald-* classes pick it up automatically)
+            // Ronas IT "Real Estate Web Property Platform" palette
+            // (light neutral base, deep navy text, blue primary, soft blue/green tints)
             colors: {
                 emerald: {
-                    50: '#E8F9EF',
-                    100: '#D0F1DE',
-                    200: '#A6E8C3',
-                    300: '#6FDC9E',
-                    400: '#3DDC84',
-                    500: '#25D366', // WhatsApp green
-                    600: '#1EBE5B',
-                    700: '#128C7E', // WhatsApp teal
-                    800: '#0E7569',
-                    900: '#075E54', // WhatsApp dark teal
-                    950: '#053F38',
+                    50: '#F3F6FA',
+                    100: '#E3EBFD',
+                    200: '#CEDBE4',
+                    300: '#98A7A7',
+                    400: '#4F88A7',
+                    500: '#0076FF', // primary blue
+                    600: '#1A73E8',
+                    700: '#00639B', // deep blue
+                    800: '#39485C', // slate navy
+                    900: '#131314', // near-black navy
+                    950: '#0D0E0F', // dark navy
                 },
             },
             fontFamily: {

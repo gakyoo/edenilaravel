@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminController;
 use App\Models\Property;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProfileController;
@@ -37,6 +38,20 @@ Route::middleware('auth')->group(function () {
     Route::patch('/dashboard/tasks/{task}', [DashboardController::class, 'updateTask'])->name('dashboard.tasks.update');
     Route::delete('/dashboard/tasks/{task}', [DashboardController::class, 'destroyTask'])->name('dashboard.tasks.destroy');
     Route::get('/dashboard/export', [DashboardController::class, 'export'])->name('dashboard.export');
+});
+
+// Admin backend (replaces Filament)
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+    Route::get('/properties', [AdminController::class, 'properties'])->name('properties');
+    Route::get('/properties/create', [AdminController::class, 'create'])->name('properties.create');
+    Route::post('/properties', [AdminController::class, 'store'])->name('properties.store');
+    Route::get('/properties/{property}/edit', [AdminController::class, 'edit'])->name('properties.edit');
+    Route::put('/properties/{property}', [AdminController::class, 'update'])->name('properties.update');
+    Route::delete('/properties/{property}', [AdminController::class, 'destroy'])->name('properties.destroy');
+    Route::get('/enquiries', [AdminController::class, 'enquiries'])->name('enquiries');
+    Route::patch('/enquiries/{enquiry}', [AdminController::class, 'updateEnquiry'])->name('enquiries.update');
+    Route::delete('/enquiries/{enquiry}', [AdminController::class, 'destroyEnquiry'])->name('enquiries.destroy');
 });
 
 Route::middleware('auth')->group(function () {
