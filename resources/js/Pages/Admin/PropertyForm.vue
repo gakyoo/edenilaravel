@@ -68,12 +68,12 @@ function onGalleryChange(e) {
 
 function submit() {
     if (isEdit) {
-        form.post(`/admin/properties/${props.property.id}`, {
+        form.post(`/dashboard/properties/${props.property.id}`, {
             forceFormData: true,
             preserveScroll: true,
         });
     } else {
-        form.post('/admin/properties', {
+        form.post('/dashboard/properties', {
             forceFormData: true,
             preserveScroll: true,
         });
@@ -93,10 +93,10 @@ function submit() {
 
         <div class="py-8 max-w-4xl">
             <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-3 mb-6">
-                <Link href="/admin" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</Link>
-                <Link href="/admin/properties" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Properties</Link>
-                <Link href="/admin/properties/create" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ New Property</Link>
-                <Link href="/admin/enquiries" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Enquiries</Link>
+                <Link href="/dashboard" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</Link>
+                <Link href="/dashboard" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Properties</Link>
+                <Link href="/dashboard/properties/create" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ New Property</Link>
+                <Link href="/dashboard" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Enquiries</Link>
             </div>
 
             <form @submit.prevent="submit" class="space-y-6">
@@ -291,7 +291,7 @@ function submit() {
                         class="bg-[#0076FF] hover:bg-[#1A73E8] text-white px-8 py-3 rounded-xl font-semibold transition disabled:opacity-50">
                         {{ form.processing ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Property') }}
                     </button>
-                    <Link href="/admin/properties" class="border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-6 py-3 rounded-xl font-semibold text-center">
+                    <Link href="/dashboard" class="border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-6 py-3 rounded-xl font-semibold text-center">
                         Cancel
                     </Link>
                 </div>

@@ -154,6 +154,32 @@ class DashboardController extends Controller
             'regions' => Property::distinct()->pluck('region')->filter()->values(),
         ];
 
+        // ---------- Admin KPIs (merged) ----------
+        $adminKpis = [
+            'off_market' => Property::where('status', 'off_market')->count(),
+            'usd_value' => Property::where('currency', 'USD')->where('status', '!=', 'off_market')->sum('price'),
+            'total_users' => \App\Models\User::count(),
+            'agents' => \App\Models\User::where('role', 'agent')->count(),
+            'buyers' => \App\Models\User::where('role', 'buyer')->count(),
+        ];
+        $byType = Property::select('property_type', DB::raw('count(*) as c'))
+            ->groupBy('property_type')->orderByDesc('c')->get();
+        $byRegion = Property::select('region', DB::raw('count(*) as c'))
+            ->whereNotNull('region')->groupBy('region')->orderByDesc('c')->limit(6)->get();
+        $byStatus = Property::select('status', DB::raw('count(*) as c'))
+            ->groupBy('status')->get();
+
+        // ---------- All enquiries (for merged tab) ----------
+        $allEnquiries = Enquiry::with('property:id,title')
+            ->when($request->filled('eq'), fn ($q) => $q->where(fn ($s) => $s
+                ->where('name', 'like', '%'.$request->eq.'%')
+                ->orWhere('email', 'like', '%'.$request->eq.'%')
+                ->orWhere('phone', 'like', '%'.$request->eq.'%')))
+            ->when($request->filled('estatus'), fn ($q) => $q->where('status', $request->estatus))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('Dashboard', [
             'metrics' => $metrics,
             'activity' => $activity,
@@ -167,7 +193,137 @@ class DashboardController extends Controller
             'upcoming' => $upcoming,
             'topListings' => $topListings,
             'viewsByStatus' => $viewsByStatus,
+            'adminKpis' => $adminKpis,
+            'byType' => $byType,
+            'byRegion' => $byRegion,
+            'byStatus' => $byStatus,
+            'allEnquiries' => $allEnquiries,
+            'enquiryFilters' => $request->only(['eq', 'estatus']),
         ]);
+    }
+
+    // ---------- Merged admin: property management ----------
+
+    public function createProperty()
+    {
+        return Inertia::render('Admin/PropertyForm', [
+            'property' => null,
+            'agents' => \App\Models\User::whereIn('role', ['agent', 'admin'])->get(['id', 'name', 'company_name', 'email']),
+            'statuses' => ['active', 'pending', 'sold', 'rented', 'off_market'],
+            'types' => ['residential', 'commercial', 'industrial', 'land', 'mixed_use'],
+        ]);
+    }
+
+    public function editProperty(Property $property)
+    {
+        $property->load('media');
+
+        return Inertia::render('Admin/PropertyForm', [
+            'property' => $property,
+            'agents' => \App\Models\User::whereIn('role', ['agent', 'admin'])->get(['id', 'name', 'company_name', 'email']),
+            'statuses' => ['active', 'pending', 'sold', 'rented', 'off_market'],
+            'types' => ['residential', 'commercial', 'industrial', 'land', 'mixed_use'],
+        ]);
+    }
+
+    public function storeProperty(Request $request)
+    {
+        $data = $this->validateProperty($request);
+        $property = Property::create($data);
+        $this->handleUploads($request, $property);
+
+        return redirect(route('dashboard'))->with('success', 'Property created.');
+    }
+
+    public function updateProperty(Request $request, Property $property)
+    {
+        $data = $this->validateProperty($request);
+        $property->update($data);
+        $this->handleUploads($request, $property);
+
+        return redirect(route('dashboard'))->with('success', 'Property updated.');
+    }
+
+    public function destroyProperty(Property $property)
+    {
+        $property->delete();
+
+        return back()->with('success', 'Property deleted.');
+    }
+
+    public function updateEnquiry(Request $request, Enquiry $enquiry)
+    {
+        $enquiry->update($request->validate([
+            'status' => 'required|in:new,contacted,qualified,closed',
+        ]));
+
+        return back()->with('success', 'Enquiry updated.');
+    }
+
+    public function destroyEnquiry(Enquiry $enquiry)
+    {
+        $enquiry->delete();
+
+        return back()->with('success', 'Enquiry deleted.');
+    }
+
+    protected function validateProperty(Request $request): array
+    {
+        return $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'agent_id' => 'nullable|exists:users,id',
+            'parcel_number' => 'nullable|string|max:255',
+            'address_line' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'property_type' => 'required|in:residential,commercial,industrial,land,mixed_use',
+            'listing_type' => 'required|in:sale,rent,both',
+            'lot_size' => 'nullable|numeric',
+            'building_area' => 'nullable|numeric',
+            'bedrooms' => 'nullable|integer',
+            'bathrooms' => 'nullable|integer',
+            'stories' => 'nullable|integer',
+            'year_built' => 'nullable|integer',
+            'parking_spaces' => 'nullable|integer',
+            'price' => 'required|numeric|min:0',
+            'currency' => 'required|in:TZS,USD',
+            'is_negotiable' => 'nullable|boolean',
+            'status' => 'required|in:active,pending,sold,rented,off_market',
+            'is_featured' => 'nullable|boolean',
+            'amenities' => 'nullable|array',
+            'listed_at' => 'nullable|date',
+        ]);
+    }
+
+    protected function handleUploads(Request $request, Property $property): void
+    {
+        if ($request->hasFile('primary_photo')) {
+            $path = $request->file('primary_photo')->store('property-media/'.$property->id, 'public');
+            PropertyMedia::create([
+                'property_id' => $property->id,
+                'type' => 'photo',
+                'path' => $path,
+                'is_primary' => true,
+                'mime_type' => $request->file('primary_photo')->getMimeType(),
+            ]);
+        }
+
+        if ($request->hasFile('gallery_photos')) {
+            foreach ($request->file('gallery_photos') as $photo) {
+                $path = $photo->store('property-media/'.$property->id, 'public');
+                PropertyMedia::create([
+                    'property_id' => $property->id,
+                    'type' => 'photo',
+                    'path' => $path,
+                    'is_primary' => false,
+                    'mime_type' => $photo->getMimeType(),
+                ]);
+            }
+        }
     }
 
     public function storeTask(Request $request)
