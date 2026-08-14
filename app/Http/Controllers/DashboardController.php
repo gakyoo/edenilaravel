@@ -6,8 +6,10 @@ use App\Models\Enquiry;
 use App\Models\Property;
 use App\Models\Task;
 use App\Models\Tour;
+use App\Mail\TourStatusChanged;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -15,6 +17,11 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+
+        // ---------- Non-admin users get their own dashboard ----------
+        if ($user->role !== 'admin') {
+            return $this->userDashboard($request);
+        }
 
         // ---------- Key metrics ----------
         $metrics = [
@@ -239,6 +246,49 @@ class DashboardController extends Controller
         ]);
     }
 
+    /**
+     * User dashboard: only data related to the logged-in buyer/seller/tenant/agent.
+     */
+    protected function userDashboard(Request $request)
+    {
+        $user = $request->user();
+
+        $myTours = Tour::with('property:id,title,city,region,price,currency')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(fn ($t) => [
+                'id' => $t->id,
+                'property' => $t->property,
+                'preferred_date' => $t->preferred_date?->format('Y-m-d'),
+                'preferred_time' => $t->preferred_time,
+                'status' => $t->status,
+                'created_at' => $t->created_at?->diffForHumans(),
+            ]);
+
+        $favorites = $user->favorites()
+            ->with('media:id,property_id,path,is_primary')
+            ->active()
+            ->latest('favorites.created_at')
+            ->get();
+
+        $savedSearches = $user->savedSearches()
+            ->latest()
+            ->get()
+            ->map(fn ($s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'label' => $s->label(),
+                'url' => $s->url(),
+            ]);
+
+        return Inertia::render('UserDashboard', [
+            'myTours' => $myTours,
+            'favorites' => $favorites,
+            'savedSearches' => $savedSearches,
+        ]);
+    }
+
     // ---------- Merged admin: property management ----------
 
     public function createProperty()
@@ -311,6 +361,15 @@ class DashboardController extends Controller
         $tour->update($request->validate([
             'status' => ['required', 'in:pending,confirmed,completed,cancelled'],
         ]));
+
+        // Transactional email: notify the requester about the status change
+        if ($tour->email) {
+            try {
+                Mail::to($tour->email)->send(new TourStatusChanged($tour));
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         return back()->with('success', 'Tour updated.');
     }

@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
+import SiteFooter from '@/Components/SiteFooter.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -269,33 +270,6 @@ const features = [
         </section>
 
         <!-- Footer -->
-        <footer class="bg-gray-900 text-gray-400 py-10">
-            <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-                <div>
-                    <div class="text-lg font-bold text-white mb-2">Edenire.co.tz</div>
-                    <p class="text-gray-500">{{ footerAbout }}</p>
-                </div>
-                <div>
-                    <div class="font-semibold text-white mb-2">Explore</div>
-                    <ul class="space-y-1">
-                        <li><Link href="/properties" class="hover:text-emerald-400">All properties</Link></li>
-                        <li><Link href="/properties" class="hover:text-emerald-400">For sale</Link></li>
-                        <li><Link href="/properties" class="hover:text-emerald-400">For rent</Link></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="font-semibold text-white mb-2">Contact</div>
-                    <ul class="space-y-1">
-                        <li>📞 +255 759 210 560</li>
-                        <li>✉️ info@edenire.co.tz</li>
-                        <li>📍 {{ contactLocation }}</li>
-                        <li>💬 WhatsApp: 24/7 enquiries</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="max-w-7xl mx-auto px-4 mt-8 pt-6 border-t border-gray-800 text-xs text-gray-600">
-                © {{ new Date().getFullYear() }} Edeni Realtors · Edenire.co.tz — All rights reserved.
-            </div>
-        </footer>
+        <SiteFooter />
     </div>
 </template>

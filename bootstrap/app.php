@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust proxies (Cloudflare tunnel) so https asset URLs are generated correctly
         $middleware->trustProxies(at: '*');
 
+        // Admin-only routes (property/enquiry/tour/content management)
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,

@@ -4,6 +4,10 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
+import SiteFooter from '@/Components/SiteFooter.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
 
 const props = defineProps({
     properties: Object,
@@ -140,6 +144,35 @@ const radiusOptions = [
 ];
 
 const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
+
+// ---------- Save search ----------
+const savingSearch = ref(false);
+const savedMsg = ref('');
+
+function saveSearch() {
+    if (!page.props.auth?.user) {
+        window.location.href = '/login';
+        return;
+    }
+    savingSearch.value = true;
+    savedMsg.value = '';
+    const filters = buildParams();
+    if (!Object.keys(filters).length) {
+        savedMsg.value = 'Apply at least one filter first.';
+        savingSearch.value = false;
+        return;
+    }
+    router.post('/saved-searches', { filters }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            savedMsg.value = '✅ Search saved — find it in your dashboard.';
+        },
+        onError: () => {
+            savedMsg.value = 'Could not save search.';
+        },
+        onFinish: () => { savingSearch.value = false; },
+    });
+}
 </script>
 
 <template>
@@ -290,9 +323,18 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
             </div>
 
             <!-- Results count -->
-            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                {{ properties.total }} propert{{ properties.total === 1 ? 'y' : 'ies' }} found
-                <span v-if="sort === 'distance'" class="ml-2 text-[#70A83C] dark:text-[#A8E46A]">· sorted by distance</span>
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ properties.total }} propert{{ properties.total === 1 ? 'y' : 'ies' }} found
+                    <span v-if="sort === 'distance'" class="ml-2 text-[#70A83C] dark:text-[#A8E46A]">· sorted by distance</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button v-if="hasActiveFilters" @click="saveSearch" :disabled="savingSearch"
+                        class="px-3 py-1.5 rounded-full border border-[#A8E46A] text-[#70A83C] dark:text-[#A8E46A] text-sm font-semibold hover:bg-[#A8E46A]/5 transition disabled:opacity-50">
+                        {{ savingSearch ? 'Saving…' : '💾 Save this search' }}
+                    </button>
+                    <span v-if="savedMsg" class="text-sm text-[#70A83C] dark:text-[#A8E46A]">{{ savedMsg }}</span>
+                </div>
             </div>
 
             <div v-if="properties.data.length === 0" class="text-center py-16 text-gray-500 dark:text-gray-400">
@@ -351,5 +393,7 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
                 </div>
             </div>
         </div>
+
+        <SiteFooter />
     </div>
 </template>

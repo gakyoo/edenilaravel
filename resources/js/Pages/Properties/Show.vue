@@ -5,6 +5,7 @@ import ThemeToggle from '@/Components/ThemeToggle.vue';
 import PropertyMap from '@/Components/PropertyMap.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
 import Modal from '@/Components/Modal.vue';
+import SiteFooter from '@/Components/SiteFooter.vue';
 
 const page = usePage();
 
@@ -269,10 +270,6 @@ const details = computed(() => {
 
                         <div class="mt-4 flex items-center gap-2 flex-wrap">
                             <FavoriteButton :property-id="property.id" :active="isFavorite" />
-                            <button type="button" @click="openTourModal"
-                                class="bg-[#232126] text-[#A8E46A] px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-black transition">
-                                🗓️ Schedule a Tour
-                            </button>
                         </div>
 
                         <div v-if="tourSent" class="mt-4 bg-[#A8E46A]/15 text-[#70A83C] dark:text-[#A8E46A] border border-[#A8E46A]/40 rounded-lg px-4 py-3 text-sm font-medium">
@@ -428,6 +425,8 @@ const details = computed(() => {
                 </div>
             </div>
         </div>
+
+        <SiteFooter />
 
         <!-- ⛶ Lightbox overlay -->
         <div v-if="lightboxOpen" class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center" @click.self="closeLightbox">

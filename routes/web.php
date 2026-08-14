@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\SiteContent;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SavedSearchController;
 use App\Models\Task;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -44,11 +45,18 @@ Route::middleware('auth')->group(function () {
 // Tour booking (public — no auth required)
 Route::post('/properties/{property}/tour', [PropertyController::class, 'storeTour'])->name('properties.tour.store');
 
+// Saved searches (auth required)
+Route::middleware('auth')->group(function () {
+    Route::post('/saved-searches', [SavedSearchController::class, 'store'])->name('saved-searches.store');
+    Route::delete('/saved-searches/{savedSearch}', [SavedSearchController::class, 'destroy'])->name('saved-searches.destroy');
+});
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
 // Merged backend: dashboard holds everything (admin features merged in)
-Route::middleware('auth')->group(function () {
+// Admin-only management routes — non-admin users get their own dashboard instead
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/dashboard/tasks', [DashboardController::class, 'storeTask'])->name('dashboard.tasks.store');
     Route::patch('/dashboard/tasks/{task}', [DashboardController::class, 'updateTask'])->name('dashboard.tasks.update');
     Route::delete('/dashboard/tasks/{task}', [DashboardController::class, 'destroyTask'])->name('dashboard.tasks.destroy');

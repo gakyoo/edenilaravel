@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\Tour;
+use App\Mail\TourBooked;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class PropertyController extends Controller
@@ -197,12 +199,20 @@ class PropertyController extends Controller
             'message' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $property->tours()->create([
+        $tour = $property->tours()->create([
             ...$data,
             'user_id' => $request->user()?->id,
             'status' => 'pending',
         ]);
         $property->increment('tours_count');
+
+        // Transactional email: confirm the booking to the requester
+        try {
+            Mail::to($tour->email)->send(new TourBooked($tour));
+        } catch (\Throwable $e) {
+            // Don't block the booking if mail is not configured yet
+            report($e);
+        }
 
         return back()->with('success', 'Tour requested! We will confirm your visit soon.');
     }

@@ -1,18 +1,28 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import { Link } from '@inertiajs/vue3';
+import SiteFooter from '@/Components/SiteFooter.vue';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const showingSidebar = ref(false);
+const page = usePage();
+const isAdmin = computed(() => page.props.auth?.user?.role === 'admin');
 
-const navItems = [
-    { href: '/dashboard?tab=overview', label: 'Dashboard', icon: '📊', active: (path) => path === '/dashboard' || path.startsWith('/dashboard?tab=overview') },
+const adminItems = [
     { href: '/dashboard?tab=properties', label: 'Properties', icon: '🏠', active: (path) => path.includes('tab=properties') },
     { href: '/dashboard/properties/create', label: 'Add Property', icon: '➕', active: (path) => path.includes('/properties/create') },
     { href: '/dashboard?tab=enquiries', label: 'Enquiries', icon: '💬', active: (path) => path.includes('tab=enquiries') },
     { href: '/dashboard?tab=tours', label: 'Tours', icon: '🗓️', active: (path) => path.includes('tab=tours') },
-    { href: '/favorites', label: 'Saved', icon: '❤️', active: (path) => path.includes('/favorites') },
 ];
+
+const navItems = computed(() => {
+    const base = [
+        { href: '/dashboard', label: 'Dashboard', icon: '📊', active: (path) => path === '/dashboard' || path.startsWith('/dashboard?') },
+    ];
+    if (isAdmin.value) base.push(...adminItems);
+    base.push({ href: '/favorites', label: 'Saved', icon: '❤️', active: (path) => path.includes('/favorites') });
+    return base;
+});
 </script>
 
 <template>
@@ -91,6 +101,8 @@ const navItems = [
             <main class="px-4 sm:px-6 py-6">
                 <slot />
             </main>
+
+            <SiteFooter />
         </div>
     </div>
 </template>

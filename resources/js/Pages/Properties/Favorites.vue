@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
+import SiteFooter from '@/Components/SiteFooter.vue';
 
 const props = defineProps({
     properties: Object,
@@ -82,5 +83,7 @@ const props = defineProps({
                 <Link v-if="properties.next_page_url" :href="properties.next_page_url" class="px-4 py-2 bg-[#A8E46A] text-[#232126] rounded-lg">Next →</Link>
             </div>
         </div>
+
+        <SiteFooter />
     </div>
 </template>
