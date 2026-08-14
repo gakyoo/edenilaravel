@@ -22,6 +22,7 @@ Route::get('/', function () {
 
     return Inertia::render('Landing', [
         'featured' => $featured,
+        'favoriteIds' => auth()->check() ? auth()->user()->favorites()->pluck('property_id') : collect(),
         'siteContent' => SiteContent::allMap(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -31,6 +32,16 @@ Route::get('/', function () {
 // Public property listing (no auth required)
 Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
 Route::get('/properties/{property}/{slug?}', [PropertyController::class, 'show'])->name('properties.show');
+
+// Favorites (auth required)
+Route::middleware('auth')->group(function () {
+    Route::post('/properties/{property}/favorite', [PropertyController::class, 'favorite'])->name('properties.favorite');
+    Route::delete('/properties/{property}/favorite', [PropertyController::class, 'unfavorite'])->name('properties.unfavorite');
+    Route::get('/favorites', [PropertyController::class, 'favorites'])->name('favorites');
+});
+
+// Tour booking (public — no auth required)
+Route::post('/properties/{property}/tour', [PropertyController::class, 'storeTour'])->name('properties.tour.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
@@ -52,6 +63,10 @@ Route::middleware('auth')->group(function () {
     // Enquiry management (was admin)
     Route::patch('/dashboard/enquiries/{enquiry}', [DashboardController::class, 'updateEnquiry'])->name('dashboard.enquiries.update');
     Route::delete('/dashboard/enquiries/{enquiry}', [DashboardController::class, 'destroyEnquiry'])->name('dashboard.enquiries.destroy');
+
+    // Tour management (merged admin)
+    Route::patch('/dashboard/tours/{tour}', [DashboardController::class, 'updateTour'])->name('dashboard.tours.update');
+    Route::delete('/dashboard/tours/{tour}', [DashboardController::class, 'destroyTour'])->name('dashboard.tours.destroy');
 
     // Site content management
     Route::get('/dashboard/content', [DashboardController::class, 'content'])->name('dashboard.content');

@@ -35,6 +35,12 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Task::class);
     }
 
+    public function favorites()
+    {
+        return $this->belongsToMany(Property::class, 'favorites')
+            ->withTimestamps();
+    }
+
     public function properties()
     {
         return $this->hasMany(\App\Models\Property::class, 'agent_id');

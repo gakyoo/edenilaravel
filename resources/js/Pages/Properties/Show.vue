@@ -1,13 +1,54 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import PropertyMap from '@/Components/PropertyMap.vue';
+import FavoriteButton from '@/Components/FavoriteButton.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     property: Object,
     similar: Array,
+    favoriteIds: Array,
 });
+
+const isFavorite = computed(() => props.favoriteIds?.includes(Number(props.property.id)));
+
+// ---------- Tour scheduling ----------
+const tourOpen = ref(false);
+const tourSent = ref(false);
+const tourForm = useForm({
+    name: '',
+    email: '',
+    phone: '',
+    preferred_date: '',
+    preferred_time: '',
+    message: '',
+});
+
+function openTourModal() {
+    const u = $page.props.auth?.user;
+    if (u) {
+        tourForm.name = tourForm.name || u.name || '';
+        tourForm.email = tourForm.email || u.email || '';
+        tourForm.phone = tourForm.phone || u.phone || '';
+    }
+    tourSent.value = false;
+    tourOpen.value = true;
+}
+
+function submitTour() {
+    tourForm.post(`/properties/${props.property.id}/tour`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            tourSent.value = true;
+            tourOpen.value = false;
+            tourForm.reset();
+        },
+    });
+}
+
+const todayStr = new Date().toISOString().split('T')[0];
 
 // ---------- Gallery ----------
 const images = computed(() => {
@@ -138,6 +179,7 @@ const details = computed(() => {
                 <Link href="/" class="flex items-center"><img src="/img/logo.svg" alt="EdeniRE" class="h-9 w-auto" /></Link>
                 <nav class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
                     <Link href="/properties" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Properties</Link>
+                    <Link v-if="$page.props.auth?.user" href="/favorites" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">❤️ Saved</Link>
                     <Link v-if="$page.props.auth?.user" href="/dashboard" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Dashboard</Link>
                     <Link v-else href="/login" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Sign in</Link>
                     <ThemeToggle />
@@ -218,8 +260,20 @@ const details = computed(() => {
                             </div>
                             <div class="text-right text-xs text-gray-400">
                                 <div>Listed {{ property.listed_at ? new Date(property.listed_at).toLocaleDateString() : 'recently' }}</div>
-                                <div>{{ property.views_count }} views · {{ property.enquiries_count }} enquiries</div>
+                                <div>{{ property.views_count }} views · {{ property.enquiries_count }} enquiries · {{ property.tours_count || 0 }} tours</div>
                             </div>
+                        </div>
+
+                        <div class="mt-4 flex items-center gap-2 flex-wrap">
+                            <FavoriteButton :property-id="property.id" :active="isFavorite" />
+                            <button type="button" @click="openTourModal"
+                                class="bg-[#232126] text-[#A8E46A] px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-black transition">
+                                🗓️ Schedule a Tour
+                            </button>
+                        </div>
+
+                        <div v-if="tourSent" class="mt-4 bg-[#A8E46A]/15 text-[#70A83C] dark:text-[#A8E46A] border border-[#A8E46A]/40 rounded-lg px-4 py-3 text-sm font-medium">
+                            🎉 Tour requested! We'll confirm your visit soon.
                         </div>
                     </div>
 
@@ -316,6 +370,10 @@ const details = computed(() => {
                                 class="block w-full bg-[#25D366] hover:bg-[#1EBE5B] text-white font-bold text-center px-4 py-3 rounded-xl transition">
                                 💬 WhatsApp
                             </a>
+                            <button type="button" @click="openTourModal"
+                                class="block w-full mt-2 bg-[#232126] hover:bg-black text-[#A8E46A] font-bold text-center px-4 py-3 rounded-xl transition">
+                                🗓️ Schedule a Tour
+                            </button>
                             <a :href="`tel:${(property.agent?.phone || '').replace(/\D/g, '')}`"
                                 class="block w-full mt-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-center px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                                 📞 Call
@@ -383,6 +441,69 @@ const details = computed(() => {
                 ← → navigate · Esc close
             </div>
         </div>
+
+        <!-- 🗓️ Tour scheduling modal -->
+        <Modal :show="tourOpen" max-width="lg" @close="tourOpen = false">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">🗓️ Schedule a Tour</h3>
+                    <button @click="tourOpen = false" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">✕</button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                    {{ property.title || 'This property' }} — we'll confirm your visit by phone or WhatsApp.
+                </p>
+
+                <form @submit.prevent="submitTour" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Your name *</label>
+                            <input v-model="tourForm.name" type="text" required placeholder="e.g. Amina Hassan"
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                            <p v-if="tourForm.errors.name" class="text-xs text-red-500 mt-1">{{ tourForm.errors.name }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Phone *</label>
+                            <input v-model="tourForm.phone" type="tel" required placeholder="e.g. +255 7xx xxx xxx"
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                            <p v-if="tourForm.errors.phone" class="text-xs text-red-500 mt-1">{{ tourForm.errors.phone }}</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Email *</label>
+                            <input v-model="tourForm.email" type="email" required placeholder="you@example.com"
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                            <p v-if="tourForm.errors.email" class="text-xs text-red-500 mt-1">{{ tourForm.errors.email }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Preferred date *</label>
+                            <input v-model="tourForm.preferred_date" type="date" :min="todayStr" required
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                            <p v-if="tourForm.errors.preferred_date" class="text-xs text-red-500 mt-1">{{ tourForm.errors.preferred_date }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Preferred time *</label>
+                            <input v-model="tourForm.preferred_time" type="time" required
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                            <p v-if="tourForm.errors.preferred_time" class="text-xs text-red-500 mt-1">{{ tourForm.errors.preferred_time }}</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Message (optional)</label>
+                            <textarea v-model="tourForm.message" rows="3" placeholder="Anything we should know? e.g. I'd like to view the garden and parking."
+                                class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 pt-1">
+                        <button type="submit" :disabled="tourForm.processing"
+                            class="flex-1 bg-[#232126] text-[#A8E46A] font-bold px-6 py-3 rounded-xl transition hover:bg-black disabled:opacity-50">
+                            {{ tourForm.processing ? 'Sending…' : 'Request Tour' }}
+                        </button>
+                        <button type="button" @click="tourOpen = false"
+                            class="px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 text-sm font-semibold">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </Modal>
 
         <!-- ⛶ Fullscreen map modal -->
         <div v-if="largeMapOpen" class="fixed inset-0 z-50 bg-black/90 flex flex-col" @click.self="largeMapOpen = false">

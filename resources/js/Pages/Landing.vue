@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import FavoriteButton from '@/Components/FavoriteButton.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -8,6 +9,7 @@ const props = defineProps({
     siteContent: Object,
     canLogin: Boolean,
     canRegister: Boolean,
+    favoriteIds: Array,
 });
 
 // Editable site content (from SiteContent table) with safe fallbacks
@@ -99,6 +101,7 @@ const features = [
                     <Link href="/properties" class="hidden md:inline hover:text-emerald-700 dark:hover:text-emerald-400">For Sale</Link>
                     <Link href="/properties" class="hidden md:inline hover:text-emerald-700 dark:hover:text-emerald-400">For Rent</Link>
                     <ThemeToggle />
+                    <Link v-if="$page.props.auth?.user" href="/favorites" class="hidden md:inline hover:text-emerald-700 dark:hover:text-emerald-400">❤️ Saved</Link>
                     <Link v-if="canLogin" href="/login"
                         class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-lg font-semibold transition">
                         Sign in
@@ -188,10 +191,17 @@ const features = [
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Link v-for="p in featured" :key="p.id" :href="p.public_url"
                     class="group bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-lg transition overflow-hidden border border-gray-100 dark:border-gray-800">
-                    <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.title"
-                        class="h-44 w-full object-cover group-hover:opacity-90 transition" />
-                    <div v-else class="h-44 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize group-hover:opacity-80 transition">
-                        {{ p.property_type }}
+                    <div class="relative">
+                        <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.title"
+                            class="h-44 w-full object-cover group-hover:opacity-90 transition" />
+                        <div v-else class="h-44 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize group-hover:opacity-80 transition">
+                            {{ p.property_type }}
+                        </div>
+                        <div class="absolute top-2 right-2" @click.prevent.stop>
+                            <FavoriteButton :property-id="p.id"
+                                :active="favoriteIds?.includes(Number(p.id))"
+                                variant="icon" size="sm" />
+                        </div>
                     </div>
                     <div class="p-4">
                         <div class="flex justify-between items-start gap-2">

@@ -22,21 +22,25 @@ const props = defineProps({
     byStatus: Array,
     allEnquiries: Object,
     enquiryFilters: Object,
+    allTours: Object,
+    tourFilters: Object,
 });
 
 // ---------- Tabs (merged admin + dashboard) — deep-linkable via ?tab= ----------
 const urlTab = new URL(window.location.href).searchParams.get('tab');
-const activeTab = ref(['overview', 'properties', 'enquiries'].includes(urlTab) ? urlTab : 'overview');
+const activeTab = ref(['overview', 'properties', 'enquiries', 'tours'].includes(urlTab) ? urlTab : 'overview');
 const tabs = [
     { key: 'overview', label: '📊 Overview' },
     { key: 'properties', label: '🏠 Properties' },
     { key: 'enquiries', label: '💬 Enquiries' },
+    { key: 'tours', label: '🗓️ Tours' },
 ];
 
 const tabTitles = {
     overview: 'Dashboard — Overview',
     properties: 'Properties — Manage Listings',
     enquiries: 'Enquiries — Leads & Messages',
+    tours: 'Tours — Viewing Requests',
 };
 
 const pageTitle = computed(() => `${tabTitles[activeTab.value]} | Edenire.co.tz`);
@@ -98,6 +102,24 @@ function deleteEnquiry(enquiry) {
     }
 }
 
+// ---------- Tour management (merged admin) ----------
+const tQ = ref(props.tourFilters.tq || '');
+const tStatus = ref(props.tourFilters.tstatus || '');
+
+function applyTourFilters() {
+    router.get('/dashboard', { ttab: 'tours', tq: tQ.value, tstatus: tStatus.value }, { preserveState: true, replace: true });
+}
+
+function setTourStatus(tour, status) {
+    router.patch(`/dashboard/tours/${tour.id}`, { status }, { preserveScroll: true });
+}
+
+function deleteTour(tour) {
+    if (confirm(`Delete tour request from ${tour.name || 'anonymous'}?`)) {
+        router.delete(`/dashboard/tours/${tour.id}`, { preserveScroll: true });
+    }
+}
+
 // ---------- Tasks ----------
 const showTaskForm = ref(false);
 const taskForm = useForm({
@@ -156,6 +178,13 @@ const enquiryStatusColors = {
 
 const channelIcons = { whatsapp: '💬', web_form: '📝', email: '✉️', phone: '📞', in_app: '💬' };
 
+const tourStatusColors = {
+    pending: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    confirmed: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+    completed: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+};
+
 // ---------- Analytics ----------
 const maxViews = computed(() => Math.max(1, ...props.topListings.map((t) => t.views)));
 
@@ -193,7 +222,7 @@ function timeAgo(dateStr) {
         </template>
 
         <!-- Tabs -->
-        <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-2 mt-4">
+            <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-2 mt-4">
             <button v-for="t in tabs" :key="t.key" @click="switchTab(t.key)"
                 class="px-4 py-2 rounded-lg text-sm font-semibold transition"
                 :class="activeTab === t.key ? 'bg-[#A8E46A] text-[#232126]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'">
@@ -359,7 +388,7 @@ function timeAgo(dateStr) {
                             <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent Activity</h3>
                             <div class="space-y-3">
                                 <div v-for="(a, i) in activity" :key="i" class="flex items-start gap-3">
-                                    <span class="text-lg">{{ a.type === 'enquiry' ? '💬' : '🏠' }}</span>
+                                    <span class="text-lg">{{ a.type === 'enquiry' ? '💬' : a.type === 'tour' ? '🗓️' : '🏠' }}</span>
                                     <div class="min-w-0">
                                         <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ a.label }}</div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ a.detail }}</div>
@@ -561,6 +590,59 @@ function timeAgo(dateStr) {
                     <Link v-if="allEnquiries.prev_page_url" :href="allEnquiries.prev_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">← Prev</Link>
                     <span class="px-3 py-1.5 text-sm text-gray-500">{{ allEnquiries.current_page }} / {{ allEnquiries.last_page }}</span>
                     <Link v-if="allEnquiries.next_page_url" :href="allEnquiries.next_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">Next →</Link>
+                </div>
+            </div>
+
+            <!-- ============ TAB: TOURS (merged admin) ============ -->
+            <div v-else-if="activeTab === 'tours'" class="space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5 flex flex-wrap gap-2">
+                    <input v-model="tQ" @keyup.enter="applyTourFilters" type="text" placeholder="Search name, email, phone..."
+                        class="flex-1 min-w-[200px] rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
+                    <select v-model="tStatus" @change="applyTourFilters" class="rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700">
+                        <option value="">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="space-y-3">
+                    <div v-for="t in allTours.data" :key="t.id" class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-lg">🗓️</span>
+                                    <span class="font-semibold text-gray-900 dark:text-gray-100">{{ t.name || 'Anonymous' }}</span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full capitalize" :class="tourStatusColors[t.status]">{{ t.status }}</span>
+                                </div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <template v-if="t.property">{{ t.property.title }} · </template>
+                                    {{ t.email || 'no email' }}<template v-if="t.phone"> · {{ t.phone }}</template>
+                                </div>
+                                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+                                    📅 {{ t.preferred_date }} at {{ t.preferred_time }}
+                                </div>
+                                <p v-if="t.message" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">"{{ t.message }}"</p>
+                                <div class="text-xs text-gray-400 mt-1">{{ t.created_at }}</div>
+                            </div>
+                            <div class="flex gap-2 flex-wrap">
+                                <button v-for="s in ['pending', 'confirmed', 'completed', 'cancelled']" :key="s" @click="setTourStatus(t, s)"
+                                    class="text-xs px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 capitalize hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                                    :class="t.status === s ? 'bg-[#A8E46A] text-[#232126] border-[#A8E46A]' : 'text-gray-500 dark:text-gray-400'">
+                                    {{ s }}
+                                </button>
+                                <button @click="deleteTour(t)" class="text-xs px-3 py-1.5 rounded-full text-red-500 hover:text-red-700 border border-red-200 dark:border-red-800">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="allTours.data.length === 0" class="bg-white dark:bg-gray-900 rounded-xl shadow p-10 text-center text-gray-400">No tour requests found.</div>
+                </div>
+
+                <div class="flex justify-center gap-2">
+                    <Link v-if="allTours.prev_page_url" :href="allTours.prev_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">← Prev</Link>
+                    <span class="px-3 py-1.5 text-sm text-gray-500">{{ allTours.current_page }} / {{ allTours.last_page }}</span>
+                    <Link v-if="allTours.next_page_url" :href="allTours.next_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">Next →</Link>
                 </div>
             </div>
         </div>

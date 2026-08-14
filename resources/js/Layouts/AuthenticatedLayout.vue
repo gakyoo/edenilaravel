@@ -10,6 +10,8 @@ const navItems = [
     { href: '/dashboard?tab=properties', label: 'Properties', icon: '🏠', active: (path) => path.includes('tab=properties') },
     { href: '/dashboard/properties/create', label: 'Add Property', icon: '➕', active: (path) => path.includes('/properties/create') },
     { href: '/dashboard?tab=enquiries', label: 'Enquiries', icon: '💬', active: (path) => path.includes('tab=enquiries') },
+    { href: '/dashboard?tab=tours', label: 'Tours', icon: '🗓️', active: (path) => path.includes('tab=tours') },
+    { href: '/favorites', label: 'Saved', icon: '❤️', active: (path) => path.includes('/favorites') },
 ];
 </script>
 

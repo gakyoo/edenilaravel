@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Enquiry;
 use App\Models\Property;
 use App\Models\Task;
+use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -27,6 +28,8 @@ class DashboardController extends Controller
             'total_views' => Property::sum('views_count'),
             'total_enquiries' => Enquiry::count(),
             'new_enquiries' => Enquiry::where('created_at', '>=', now()->subDays(7))->count(),
+            'total_tours' => Tour::count(),
+            'new_tours' => Tour::where('created_at', '>=', now()->subDays(7))->count(),
             'open_tasks' => Task::where('user_id', $user->id)->where('status', '!=', 'done')->count(),
         ];
 
@@ -44,6 +47,20 @@ class DashboardController extends Controller
                     'detail' => ($e->name ?: 'Someone') . ' asked about "'.($e->property?->title ?: 'a property').'"',
                     'time' => $e->created_at?->diffForHumans(),
                     'created_at' => $e->created_at,
+                ]);
+            });
+
+        Tour::with('property:id,title')
+            ->latest()
+            ->limit(6)
+            ->get()
+            ->each(function ($t) use ($activity) {
+                $activity->push([
+                    'type' => 'tour',
+                    'label' => 'Tour request',
+                    'detail' => ($t->name ?: 'Someone') . ' wants to view "'.($t->property?->title ?: 'a property').'"',
+                    'time' => $t->created_at?->diffForHumans(),
+                    'created_at' => $t->created_at,
                 ]);
             });
 
@@ -70,6 +87,13 @@ class DashboardController extends Controller
         }
         if ($metrics['new_enquiries'] > 0) {
             $alerts[] = ['level' => 'info', 'text' => $metrics['new_enquiries'].' new enquiry/enquiries in the last 7 days.'];
+        }
+        if ($metrics['new_tours'] > 0) {
+            $alerts[] = ['level' => 'info', 'text' => $metrics['new_tours'].' new tour request(s) in the last 7 days.'];
+        }
+        $pendingTours = Tour::where('status', 'pending')->count();
+        if ($pendingTours > 0) {
+            $alerts[] = ['level' => 'warning', 'text' => "$pendingTours tour request(s) awaiting confirmation."];
         }
         $pending = Property::where('status', 'pending')->count();
         if ($pending > 0) {
@@ -180,6 +204,17 @@ class DashboardController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        // ---------- All tours (for merged tab) ----------
+        $allTours = Tour::with('property:id,title,price,currency')
+            ->when($request->filled('tq'), fn ($q) => $q->where(fn ($s) => $s
+                ->where('name', 'like', '%'.$request->tq.'%')
+                ->orWhere('email', 'like', '%'.$request->tq.'%')
+                ->orWhere('phone', 'like', '%'.$request->tq.'%')))
+            ->when($request->filled('tstatus'), fn ($q) => $q->where('status', $request->tstatus))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('Dashboard', [
             'metrics' => $metrics,
             'activity' => $activity,
@@ -199,6 +234,8 @@ class DashboardController extends Controller
             'byStatus' => $byStatus,
             'allEnquiries' => $allEnquiries,
             'enquiryFilters' => $request->only(['eq', 'estatus']),
+            'allTours' => $allTours,
+            'tourFilters' => $request->only(['tq', 'tstatus']),
         ]);
     }
 
@@ -265,6 +302,24 @@ class DashboardController extends Controller
         $enquiry->delete();
 
         return back()->with('success', 'Enquiry deleted.');
+    }
+
+    // ---------- Tour management (merged admin) ----------
+
+    public function updateTour(Request $request, Tour $tour)
+    {
+        $tour->update($request->validate([
+            'status' => ['required', 'in:pending,confirmed,completed,cancelled'],
+        ]));
+
+        return back()->with('success', 'Tour updated.');
+    }
+
+    public function destroyTour(Tour $tour)
+    {
+        $tour->delete();
+
+        return back()->with('success', 'Tour deleted.');
     }
 
     protected function validateProperty(Request $request): array

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -11,6 +12,8 @@ class PropertyController extends Controller
 {
     public function index(Request $request)
     {
+        $favoriteIds = $request->user()?->favorites()->pluck('property_id') ?? collect();
+
         $query = Property::query()
             ->with(['agent:id,name,company_name,phone', 'media:id,property_id,path,is_primary'])
             ->active()
@@ -97,6 +100,7 @@ class PropertyController extends Controller
         return Inertia::render('Properties/Index', [
             'properties' => $query->paginate(12)->withQueryString(),
             'filters' => $filters,
+            'favoriteIds' => $favoriteIds,
             'filterOptions' => [
                 'regions' => Property::distinct()->pluck('region')->filter()->values(),
                 'cities' => Property::distinct()->pluck('city')->filter()->values(),
@@ -129,6 +133,72 @@ class PropertyController extends Controller
         return Inertia::render('Properties/Show', [
             'property' => $property,
             'similar' => $similar,
+            'favoriteIds' => $request->user()?->favorites()->pluck('property_id') ?? collect(),
         ]);
+    }
+
+    // ---------- Favorites ----------
+
+    public function favorite(Request $request, Property $property)
+    {
+        $user = $request->user();
+        $already = $user->favorites()->where('property_id', $property->id)->exists();
+
+        if (!$already) {
+            $user->favorites()->attach($property->id);
+            $property->increment('favorites_count');
+        }
+
+        return back()->with('success', 'Added to favorites');
+    }
+
+    public function unfavorite(Request $request, Property $property)
+    {
+        $user = $request->user();
+        $removed = $user->favorites()->detach($property->id);
+
+        if ($removed > 0) {
+            $property->decrement('favorites_count');
+        }
+
+        return back()->with('success', 'Removed from favorites');
+    }
+
+    public function favorites(Request $request)
+    {
+        $properties = $request->user()->favorites()
+            ->with('media:id,property_id,path,is_primary')
+            ->active()
+            ->latest('favorites.created_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        return Inertia::render('Properties/Favorites', [
+            'properties' => $properties,
+            'favoriteIds' => $properties->pluck('id'),
+        ]);
+    }
+
+    // ---------- Tour scheduling ----------
+
+    public function storeTour(Request $request, Property $property)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
+            'preferred_date' => ['required', 'date', 'after_or_equal:today'],
+            'preferred_time' => ['required', 'date_format:H:i'],
+            'message' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $property->tours()->create([
+            ...$data,
+            'user_id' => $request->user()?->id,
+            'status' => 'pending',
+        ]);
+        $property->increment('tours_count');
+
+        return back()->with('success', 'Tour requested! We will confirm your visit soon.');
     }
 }

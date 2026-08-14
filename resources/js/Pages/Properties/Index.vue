@@ -3,11 +3,13 @@ import { computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import FavoriteButton from '@/Components/FavoriteButton.vue';
 
 const props = defineProps({
     properties: Object,
     filters: Object,
     filterOptions: Object,
+    favoriteIds: Array,
 });
 
 const q = ref(props.filters.q || '');
@@ -150,6 +152,7 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
                 <Link href="/" class="flex items-center"><img src="/img/logo.svg" alt="EdeniRE" class="h-9 w-auto" /></Link>
                 <nav class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
                     <Link href="/properties" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Properties</Link>
+                    <Link v-if="$page.props.auth?.user" href="/favorites" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">❤️ Saved</Link>
                     <Link v-if="$page.props.auth?.user" href="/dashboard" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Dashboard</Link>
                     <Link v-else href="/login" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Sign in</Link>
                     <ThemeToggle />
@@ -298,10 +301,17 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Link v-for="property in properties.data" :key="property.id" :href="property.public_url"
                     class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden dark:bg-gray-900 dark:shadow-gray-950">
-                    <img v-if="property.primary_image_url" :src="property.primary_image_url" :alt="property.title"
-                        class="h-48 w-full object-cover" />
-                    <div v-else class="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize">
-                        {{ property.property_type }}
+                    <div class="relative">
+                        <img v-if="property.primary_image_url" :src="property.primary_image_url" :alt="property.title"
+                            class="h-48 w-full object-cover" />
+                        <div v-else class="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize">
+                            {{ property.property_type }}
+                        </div>
+                        <div class="absolute top-2 right-2" @click.prevent.stop>
+                            <FavoriteButton :property-id="property.id"
+                                :active="favoriteIds?.includes(Number(property.id))"
+                                variant="icon" size="sm" />
+                        </div>
                     </div>
                     <div class="p-4">
                         <div class="flex justify-between items-start gap-2">

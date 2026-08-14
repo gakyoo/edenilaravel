@@ -97,8 +97,13 @@ class Property extends Model
 
     public function favorites()
     {
-        return $this->belongsToMany(User::class, 'favorites')
+        return $this->belongsToMany(Property::class, 'favorites')
             ->withTimestamps();
+    }
+
+    public function tours()
+    {
+        return $this->hasMany(Tour::class);
     }
 
     public function scopeActive($query)
