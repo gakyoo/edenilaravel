@@ -7,10 +7,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Edenire.co.tz';
 
 createInertiaApp({
-    title: (title) => (title.includes(appName) ? title : `${title} - ${appName}`),
+    title: (title) => (title.includes(appName) ? title : `${title} | ${appName}`),
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.vue`,

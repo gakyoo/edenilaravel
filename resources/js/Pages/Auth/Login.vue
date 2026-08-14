@@ -5,7 +5,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import SocialAuthButtons from '@/Components/SocialAuthButtons.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps({
@@ -29,7 +29,7 @@ const submit = () => {
     });
 };
 
-const social = computed(() => $page.props.socialAuth || {});
+const social = computed(() => usePage().props.socialAuth || {});
 const hasSocial = computed(() => social.value.google || social.value.facebook);
 </script>
 

@@ -6,6 +6,10 @@
 
         <title inertia>Edenire.co.tz — Find Your Home in Tanzania | Real Estate for Sale &amp; Rent</title>
 
+        <!-- Favicon -->
+        <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import PropertyMap from '@/Components/PropertyMap.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
 import Modal from '@/Components/Modal.vue';
+
+const page = usePage();
 
 const props = defineProps({
     property: Object,
@@ -27,7 +29,7 @@ const tourForm = useForm({
 });
 
 function openTourModal() {
-    const u = $page.props.auth?.user;
+    const u = page.props.auth?.user;
     if (u) {
         tourForm.name = tourForm.name || u.name || '';
         tourForm.email = tourForm.email || u.email || '';
