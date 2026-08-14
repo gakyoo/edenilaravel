@@ -45,6 +45,21 @@ class Property extends Model
         return $this->belongsTo(User::class, 'agent_id');
     }
 
+    public function media()
+    {
+        return $this->hasMany(PropertyMedia::class);
+    }
+
+    public function enquiries()
+    {
+        return $this->hasMany(Enquiry::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
