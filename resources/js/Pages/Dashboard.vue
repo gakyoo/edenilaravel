@@ -170,7 +170,7 @@ function fmt(n) {
         <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-2 mt-4">
             <button v-for="t in tabs" :key="t.key" @click="activeTab = t.key"
                 class="px-4 py-2 rounded-lg text-sm font-semibold transition"
-                :class="activeTab === t.key ? 'bg-[#0076FF] text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'">
+                :class="activeTab === t.key ? 'bg-[#A8E46A] text-[#232126]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'">
                 {{ t.label }}
             </button>
         </div>
@@ -217,7 +217,7 @@ function fmt(n) {
                         <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-semibold text-gray-900 dark:text-gray-100">Property Snapshot</h3>
-                                <Link href="/dashboard/properties/create" class="bg-[#0076FF] hover:bg-[#1A73E8] text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                <Link href="/dashboard/properties/create" class="bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] px-4 py-2 rounded-lg text-sm font-semibold transition">
                                     + Add Property
                                 </Link>
                             </div>
@@ -250,7 +250,7 @@ function fmt(n) {
                                     </div>
                                     <span class="text-xs px-2 py-1 rounded-full whitespace-nowrap capitalize" :class="statusStyles[p.status]">{{ p.status.replace('_', ' ') }}</span>
                                     <div class="flex gap-1 shrink-0">
-                                        <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-xs text-[#0076FF] hover:underline px-2 py-1 font-semibold">Edit</Link>
+                                        <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-xs text-[#A8E46A] hover:underline px-2 py-1 font-semibold">Edit</Link>
                                         <a :href="`/properties/${p.id}`" target="_blank" class="text-xs text-gray-400 hover:text-gray-600 px-2 py-1">View</a>
                                         <button @click="deleteProperty(p)" class="text-xs text-red-500 hover:text-red-700 px-2 py-1">Delete</button>
                                     </div>
@@ -271,7 +271,7 @@ function fmt(n) {
                                 <div v-for="t in topListings" :key="t.title" class="flex items-center gap-3">
                                     <div class="w-40 truncate text-sm text-gray-600 dark:text-gray-300">{{ t.title }}</div>
                                     <div class="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                        <div class="h-full bg-[#0076FF] rounded-full transition-all" :style="{ width: (t.views / maxViews) * 100 + '%' }"></div>
+                                        <div class="h-full bg-[#A8E46A] rounded-full transition-all" :style="{ width: (t.views / maxViews) * 100 + '%' }"></div>
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400 w-20 text-right">{{ t.views }} views · {{ t.enquiries }} inq.</div>
                                 </div>
@@ -283,7 +283,7 @@ function fmt(n) {
                         <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-semibold text-gray-900 dark:text-gray-100">Tasks & Reminders</h3>
-                                <button @click="showTaskForm = !showTaskForm" class="text-sm text-[#0076FF] font-semibold hover:underline">
+                                <button @click="showTaskForm = !showTaskForm" class="text-sm text-[#A8E46A] font-semibold hover:underline">
                                     {{ showTaskForm ? 'Cancel' : '+ Add task' }}
                                 </button>
                             </div>
@@ -304,7 +304,7 @@ function fmt(n) {
                                         <option value="high">High</option>
                                     </select>
                                     <input v-model="taskForm.due_date" type="date" class="rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
-                                    <button type="submit" class="bg-[#0076FF] text-white rounded-lg text-sm font-semibold">Add</button>
+                                    <button type="submit" class="bg-[#A8E46A] text-[#232126] rounded-lg text-sm font-semibold">Add</button>
                                 </div>
                             </form>
                             <div class="space-y-2">
@@ -375,7 +375,7 @@ function fmt(n) {
                         <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                             <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
                             <div class="grid grid-cols-1 gap-2">
-                                <Link href="/dashboard/properties/create" class="bg-[#0076FF] hover:bg-[#1A73E8] text-white rounded-lg px-4 py-2.5 text-sm font-semibold text-center transition">
+                                <Link href="/dashboard/properties/create" class="bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] rounded-lg px-4 py-2.5 text-sm font-semibold text-center transition">
                                     + Add New Property
                                 </Link>
                                 <a :href="'/dashboard/export?status=' + f.status + '&region=' + f.region" class="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-semibold text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
@@ -409,7 +409,7 @@ function fmt(n) {
                         <option value="">All regions</option>
                         <option v-for="r in filterOptions.regions" :key="r" :value="r">{{ r }}</option>
                     </select>
-                    <Link href="/dashboard/properties/create" class="bg-[#0076FF] hover:bg-[#1A73E8] text-white px-4 py-2.5 rounded-lg text-sm font-semibold">+ Add Property</Link>
+                    <Link href="/dashboard/properties/create" class="bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] px-4 py-2.5 rounded-lg text-sm font-semibold">+ Add Property</Link>
                 </div>
 
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow overflow-x-auto">
@@ -439,7 +439,7 @@ function fmt(n) {
                                 <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ p.views_count }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex gap-2">
-                                        <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-[#0076FF] hover:underline text-xs font-semibold">Edit</Link>
+                                        <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-[#A8E46A] hover:underline text-xs font-semibold">Edit</Link>
                                         <a :href="`/properties/${p.id}`" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
                                         <button @click="deleteProperty(p)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
                                     </div>
@@ -468,7 +468,7 @@ function fmt(n) {
                         <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">By Type</h3>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                             <div v-for="t in byType" :key="t.property_type" class="text-center border dark:border-gray-700 rounded-lg p-3">
-                                <div class="text-xl font-bold text-[#0076FF]">{{ t.c }}</div>
+                                <div class="text-xl font-bold text-[#A8E46A]">{{ t.c }}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ t.property_type.replace('_', ' ') }}</div>
                             </div>
                         </div>
@@ -479,7 +479,7 @@ function fmt(n) {
                             <div v-for="r in byRegion" :key="r.region" class="flex items-center gap-3">
                                 <span class="w-24 truncate text-sm text-gray-600 dark:text-gray-300">{{ r.region }}</span>
                                 <div class="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-[#0076FF] rounded-full" :style="{ width: (r.c / Math.max(1, byRegion[0]?.c)) * 100 + '%' }"></div>
+                                    <div class="h-full bg-[#A8E46A] rounded-full" :style="{ width: (r.c / Math.max(1, byRegion[0]?.c)) * 100 + '%' }"></div>
                                 </div>
                                 <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ r.c }}</span>
                             </div>
@@ -520,7 +520,7 @@ function fmt(n) {
                             <div class="flex gap-2 flex-wrap">
                                 <button v-for="s in ['new', 'contacted', 'qualified', 'closed']" :key="s" @click="setEnquiryStatus(e, s)"
                                     class="text-xs px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 capitalize hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-                                    :class="e.status === s ? 'bg-[#0076FF] text-white border-[#0076FF]' : 'text-gray-500 dark:text-gray-400'">
+                                    :class="e.status === s ? 'bg-[#A8E46A] text-[#232126] border-[#A8E46A]' : 'text-gray-500 dark:text-gray-400'">
                                     {{ s }}
                                 </button>
                                 <button @click="deleteEnquiry(e)" class="text-xs px-3 py-1.5 rounded-full text-red-500 hover:text-red-700 border border-red-200 dark:border-red-800">Delete</button>

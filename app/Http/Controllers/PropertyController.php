@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PropertyController extends Controller
@@ -20,20 +21,86 @@ class PropertyController extends Controller
             ->when($request->filled('min_price'), fn ($q) => $q->where('price', '>=', $request->min_price))
             ->when($request->filled('max_price'), fn ($q) => $q->where('price', '<=', $request->max_price))
             ->when($request->filled('bedrooms'), fn ($q) => $q->where('bedrooms', '>=', $request->bedrooms))
+            ->when($request->filled('bathrooms'), fn ($q) => $q->where('bathrooms', '>=', $request->bathrooms))
+            ->when($request->filled('min_area'), fn ($q) => $q->where('building_area', '>=', $request->min_area))
             ->when($request->filled('q'), function ($q) use ($request) {
                 $q->where(function ($sub) use ($request) {
                     $sub->where('title', 'like', '%'.$request->q.'%')
                         ->orWhere('description', 'like', '%'.$request->q.'%')
                         ->orWhere('city', 'like', '%'.$request->q.'%')
-                        ->orWhere('region', 'like', '%'.$request->q.'%');
+                        ->orWhere('region', 'like', '%'.$request->q.'%')
+                        ->orWhere('address_line', 'like', '%'.$request->q.'%');
                 });
-            })
-            ->orderByDesc('is_featured')
-            ->orderByDesc('listed_at');
+            });
+
+        // ---------- Distance sort / filter (Haversine) ----------
+        $lat = $request->float('lat');
+        $lng = $request->float('lng');
+        $radiusKm = $request->float('radius_km');
+
+        if ($lat && $lng) {
+            $distanceSql = '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))';
+
+            // Filter by radius if provided
+            if ($radiusKm > 0) {
+                $query->whereRaw($distanceSql.' <= ?', [$lat, $lng, $lat, $radiusKm]);
+            }
+
+            // Sort by distance when requested
+            if ($request->filled('sort') && $request->sort === 'distance') {
+                $query->orderByRaw($distanceSql, [$lat, $lng, $lat]);
+            }
+        }
+
+        // ---------- Sorting ----------
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'price_asc':
+                    $query->orderBy('price');
+                    break;
+                case 'price_desc':
+                    $query->orderByDesc('price');
+                    break;
+                case 'title_asc':
+                    $query->orderBy('title');
+                    break;
+                case 'title_desc':
+                    $query->orderByDesc('title');
+                    break;
+                case 'newest':
+                    $query->orderByDesc('listed_at');
+                    break;
+                case 'views':
+                    $query->orderByDesc('views_count');
+                    break;
+                case 'area_desc':
+                    $query->orderByDesc('building_area');
+                    break;
+                default:
+                    $query->orderByDesc('is_featured')->orderByDesc('listed_at');
+            }
+        } else {
+            $query->orderByDesc('is_featured')->orderByDesc('listed_at');
+        }
+
+        // Ensure deterministic order for distance sort (featured first)
+        if (!($request->filled('sort') && $request->sort === 'distance')) {
+            $query->orderByDesc('is_featured');
+        }
+
+        $filters = $request->only([
+            'q', 'type', 'listing', 'region', 'city',
+            'min_price', 'max_price', 'bedrooms', 'bathrooms', 'min_area',
+            'lat', 'lng', 'radius_km', 'sort',
+        ]);
 
         return Inertia::render('Properties/Index', [
             'properties' => $query->paginate(12)->withQueryString(),
-            'filters' => $request->only(['q', 'type', 'listing', 'region', 'city', 'min_price', 'max_price', 'bedrooms']),
+            'filters' => $filters,
+            'filterOptions' => [
+                'regions' => Property::distinct()->pluck('region')->filter()->values(),
+                'cities' => Property::distinct()->pluck('city')->filter()->values(),
+            ],
         ]);
     }
 

@@ -47,7 +47,7 @@ const statusColors = {
         <div class="py-8 space-y-6">
             <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-3">
                 <Link href="/admin" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</Link>
-                <Link href="/admin/properties" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#0076FF] text-white">Properties</Link>
+                <Link href="/admin/properties" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#A8E46A] text-[#232126]">Properties</Link>
                 <Link href="/admin/properties/create" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ New Property</Link>
                 <Link href="/admin/enquiries" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Enquiries</Link>
             </div>
@@ -71,7 +71,7 @@ const statusColors = {
                         <option value="">All regions</option>
                         <option v-for="r in regions" :key="r" :value="r">{{ r }}</option>
                     </select>
-                    <Link href="/admin/properties/create" class="bg-[#0076FF] hover:bg-[#1A73E8] text-white px-4 py-2.5 rounded-lg text-sm font-semibold">+ Add Property</Link>
+                    <Link href="/admin/properties/create" class="bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] px-4 py-2.5 rounded-lg text-sm font-semibold">+ Add Property</Link>
                 </div>
             </div>
 
@@ -105,7 +105,7 @@ const statusColors = {
                             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ p.views_count }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex gap-2">
-                                    <Link :href="`/admin/properties/${p.id}/edit`" class="text-[#0076FF] hover:underline text-xs font-semibold">Edit</Link>
+                                    <Link :href="`/admin/properties/${p.id}/edit`" class="text-[#A8E46A] hover:underline text-xs font-semibold">Edit</Link>
                                     <a :href="`/properties/${p.id}`" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
                                     <button @click="del(p)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
                                 </div>

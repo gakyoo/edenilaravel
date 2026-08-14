@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00639B"/>
-      <stop offset="100%" stop-color="#131314"/>
+      <stop offset="0%" stop-color="#70A83C"/>
+      <stop offset="100%" stop-color="#232126"/>
     </linearGradient>
   </defs>
   <rect width="800" height="600" fill="url(#bg)"/>
-  <g transform="translate(400,250)" fill="#0076FF" opacity="0.45">
+  <g transform="translate(400,250)" fill="#A8E46A" opacity="0.45">
     <path d="M-150,60 L-150,-40 L-80,-40 L-80,0 L-20,0 L-20,-70 L60,-70 L60,60 Z"/>
     <rect x="80" y="-30" width="70" height="90"/>
-    <path d="M-110,20 L-110,40 M-60,20 L-60,40 M-10,20 L-10,40 M40,20 L40,40" stroke="#0076FF" stroke-width="6" opacity="0.8"/>
+    <path d="M-110,20 L-110,40 M-60,20 L-60,40 M-10,20 L-10,40 M40,20 L40,40" stroke="#A8E46A" stroke-width="6" opacity="0.8"/>
   </g>
   <text x="400" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" opacity="0.9">Industrial</text>
-  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#98A7A7">Photos coming soon — Edenire.co.tz</text>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#A7DFF8">Photos coming soon — Edenire.co.tz</text>
 </svg>

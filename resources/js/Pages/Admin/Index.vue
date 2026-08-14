@@ -43,7 +43,7 @@ const statusColors = {
         <div class="py-8 space-y-6">
             <!-- Admin nav -->
             <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-3">
-                <Link href="/admin" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#0076FF] text-white">Dashboard</Link>
+                <Link href="/admin" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#A8E46A] text-[#232126]">Dashboard</Link>
                 <Link href="/admin/properties" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Properties</Link>
                 <Link href="/admin/properties/create" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ New Property</Link>
                 <Link href="/admin/enquiries" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Enquiries</Link>
@@ -68,7 +68,7 @@ const statusColors = {
                 </div>
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                     <div class="text-xs text-gray-500 dark:text-gray-400">Conversion Rate</div>
-                    <div class="text-2xl font-bold text-[#0076FF]">{{ kpis.conversion_rate }}%</div>
+                    <div class="text-2xl font-bold text-[#A8E46A]">{{ kpis.conversion_rate }}%</div>
                     <div class="text-xs text-gray-400">{{ kpis.new_enquiries_7d }} enquiries / 7d</div>
                 </div>
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
@@ -110,7 +110,7 @@ const statusColors = {
                         <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Properties by Type</h3>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
                             <div v-for="t in byType" :key="t.property_type" class="text-center border dark:border-gray-700 rounded-lg p-3">
-                                <div class="text-xl font-bold text-[#0076FF]">{{ t.c }}</div>
+                                <div class="text-xl font-bold text-[#A8E46A]">{{ t.c }}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ t.property_type.replace('_', ' ') }}</div>
                             </div>
                         </div>
@@ -122,7 +122,7 @@ const statusColors = {
                             <div v-for="r in byRegion" :key="r.region" class="flex items-center gap-3">
                                 <span class="w-28 text-sm text-gray-600 dark:text-gray-300">{{ r.region }}</span>
                                 <div class="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-[#0076FF] rounded-full"
+                                    <div class="h-full bg-[#A8E46A] rounded-full"
                                         :style="{ width: (r.c / Math.max(1, byRegion[0].c)) * 100 + '%' }"></div>
                                 </div>
                                 <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ r.c }}</span>

@@ -258,7 +258,7 @@ function submit() {
                         <button type="button" @click="addAmenity" class="bg-gray-100 dark:bg-gray-800 px-4 rounded-lg text-sm font-semibold">Add</button>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <span v-for="a in form.amenities" :key="a" class="bg-[#0076FF]/10 text-[#00639B] dark:text-[#0076FF] px-3 py-1 rounded-full text-sm capitalize">
+                        <span v-for="a in form.amenities" :key="a" class="bg-[#A8E46A]/10 text-[#70A83C] dark:text-[#A8E46A] px-3 py-1 rounded-full text-sm capitalize">
                             {{ a.replace(/_/g, ' ') }}
                             <button type="button" @click="removeAmenity(a)" class="ml-1 text-red-500">×</button>
                         </span>
@@ -288,7 +288,7 @@ function submit() {
                 <!-- Submit -->
                 <div class="flex gap-3">
                     <button type="submit" :disabled="form.processing"
-                        class="bg-[#0076FF] hover:bg-[#1A73E8] text-white px-8 py-3 rounded-xl font-semibold transition disabled:opacity-50">
+                        class="bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] px-8 py-3 rounded-xl font-semibold transition disabled:opacity-50">
                         {{ form.processing ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Property') }}
                     </button>
                     <Link href="/dashboard" class="border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-6 py-3 rounded-xl font-semibold text-center">

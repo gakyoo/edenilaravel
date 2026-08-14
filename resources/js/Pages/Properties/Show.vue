@@ -77,7 +77,7 @@ const waLink = computed(() => {
 const statusLabel = computed(() => props.property.status.replace('_', ' '));
 const statusBadgeClass = computed(() => {
     const map = {
-        active: 'bg-[#0076FF]/15 text-[#00639B] dark:text-[#0076FF]',
+        active: 'bg-[#A8E46A]/15 text-[#70A83C] dark:text-[#A8E46A]',
         pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
         sold: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
         rented: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
@@ -133,11 +133,11 @@ const details = computed(() => {
         <!-- Top nav -->
         <header class="bg-white dark:bg-gray-900 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-                <Link href="/" class="text-xl font-bold text-[#00639B] dark:text-[#0076FF]">Edenire.co.tz</Link>
+                <Link href="/" class="text-xl font-bold text-[#70A83C] dark:text-[#A8E46A]">Edenire.co.tz</Link>
                 <nav class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
-                    <Link href="/properties" class="hover:text-[#00639B] dark:hover:text-[#0076FF]">Properties</Link>
-                    <Link v-if="$page.props.auth?.user" href="/dashboard" class="hover:text-[#00639B] dark:hover:text-[#0076FF]">Dashboard</Link>
-                    <Link v-else href="/login" class="hover:text-[#00639B] dark:hover:text-[#0076FF]">Sign in</Link>
+                    <Link href="/properties" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Properties</Link>
+                    <Link v-if="$page.props.auth?.user" href="/dashboard" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Dashboard</Link>
+                    <Link v-else href="/login" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Sign in</Link>
                     <ThemeToggle />
                 </nav>
             </div>
@@ -181,7 +181,7 @@ const details = computed(() => {
             <div v-if="images.length > 1" class="flex gap-2 mt-3 overflow-x-auto pb-1">
                 <button v-for="(img, i) in images" :key="i" @click="openLightbox(i)"
                     class="shrink-0 rounded-lg overflow-hidden transition"
-                    :class="i === activeIndex ? 'ring-2 ring-[#0076FF]' : 'opacity-70 hover:opacity-100'">
+                    :class="i === activeIndex ? 'ring-2 ring-[#A8E46A]' : 'opacity-70 hover:opacity-100'">
                     <img :src="img" class="h-14 w-20 object-cover" :alt="`Photo ${i + 1}`" />
                 </button>
             </div>
@@ -265,7 +265,7 @@ const details = computed(() => {
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Amenities</h2>
                         <div class="flex flex-wrap gap-2">
                             <span v-for="a in property.amenities" :key="a"
-                                class="bg-[#0076FF]/10 text-[#00639B] dark:text-[#0076FF] px-3 py-1.5 rounded-full text-sm capitalize">{{ a }}</span>
+                                class="bg-[#A8E46A]/10 text-[#70A83C] dark:text-[#A8E46A] px-3 py-1.5 rounded-full text-sm capitalize">{{ a }}</span>
                         </div>
                     </div>
 
@@ -273,7 +273,7 @@ const details = computed(() => {
                     <div v-if="similar.length" class="bg-white dark:bg-gray-900 rounded-xl shadow p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Similar homes</h2>
-                            <Link href="/properties" class="text-sm text-[#00639B] dark:text-[#0076FF] font-semibold hover:underline">See all →</Link>
+                            <Link href="/properties" class="text-sm text-[#70A83C] dark:text-[#A8E46A] font-semibold hover:underline">See all →</Link>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Link v-for="s in similar" :key="s.id" :href="`/properties/${s.id}`"
@@ -286,7 +286,7 @@ const details = computed(() => {
                                 <div class="p-3">
                                     <div class="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">{{ s.title }}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ s.city }}{{ s.region ? ', ' + s.region : '' }}</div>
-                                    <div class="text-[#00639B] dark:text-[#0076FF] font-bold text-sm mt-1">{{ s.price_label }}</div>
+                                    <div class="text-[#70A83C] dark:text-[#A8E46A] font-bold text-sm mt-1">{{ s.price_label }}</div>
                                 </div>
                             </Link>
                         </div>

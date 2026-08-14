@@ -51,7 +51,7 @@ const channelIcons = { whatsapp: '💬', web_form: '📝', email: '✉️', phon
                 <Link href="/admin" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</Link>
                 <Link href="/admin/properties" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Properties</Link>
                 <Link href="/admin/properties/create" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ New Property</Link>
-                <Link href="/admin/enquiries" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#0076FF] text-white">Enquiries</Link>
+                <Link href="/admin/enquiries" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#A8E46A] text-[#232126]">Enquiries</Link>
             </div>
 
             <!-- Filters -->
@@ -87,7 +87,7 @@ const channelIcons = { whatsapp: '💬', web_form: '📝', email: '✉️', phon
                             <button v-for="s in ['new', 'contacted', 'qualified', 'closed']" :key="s"
                                 @click="setStatus(e, s)"
                                 class="text-xs px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 capitalize hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-                                :class="e.status === s ? 'bg-[#0076FF] text-white border-[#0076FF]' : 'text-gray-500 dark:text-gray-400'">
+                                :class="e.status === s ? 'bg-[#A8E46A] text-[#232126] border-[#A8E46A]' : 'text-gray-500 dark:text-gray-400'">
                                 {{ s }}
                             </button>
                             <button @click="del(e)" class="text-xs px-3 py-1.5 rounded-full text-red-500 hover:text-red-700 border border-red-200 dark:border-red-800">
