@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
 
 // ---------- WhatsApp ----------
 const waLink = computed(() => {
-    const phone = props.property.agent?.phone || '255000000000';
+    const phone = props.property.agent?.phone || '255759210560';
     const text = encodeURIComponent(`Hello, I'm interested in ${props.property.title || 'this property'} (${props.property.price_label}) listed on Edenire.co.tz`);
     return `https://wa.me/${phone.replace(/\D/g, '')}?text=${text}`;
 });

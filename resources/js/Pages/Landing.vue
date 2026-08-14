@@ -146,7 +146,7 @@ const features = [
                 <h2 class="text-3xl font-bold mb-3">Are you selling or looking for a property?</h2>
                 <p class="text-gray-300 mb-8">Contact us here — our team will help you find the right property or buyer.</p>
                 <a
-                    href="https://wa.me/255700000000?text=Hello%20Edenire%2C%20I%20would%20like%20to%20enquire%20about%20properties."
+                    href="https://wa.me/255759210560?text=Hello%20Edenire%2C%20I%20would%20like%20to%20enquire%20about%20properties."
                     target="_blank"
                     class="inline-flex items-center gap-3 bg-[#A8E46A] hover:bg-[#8CC84F] text-[#232126] text-xl font-bold px-10 py-4 rounded-2xl transition shadow-lg shadow-[#A8E46A]/20"
                 >
@@ -174,7 +174,7 @@ const features = [
                 <div>
                     <div class="font-semibold text-white mb-2">Contact</div>
                     <ul class="space-y-1">
-                        <li>📞 +255 (0) 000 000 000</li>
+                        <li>📞 +255 759 210 560</li>
                         <li>✉️ info@edenire.co.tz</li>
                         <li>📍 Arusha, Tanzania</li>
                         <li>💬 WhatsApp: 24/7 enquiries</li>
