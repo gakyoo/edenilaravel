@@ -44,8 +44,19 @@ class PropertyController extends Controller
         // Track view (demand analytics)
         $property->increment('views_count');
 
+        // Similar homes in the same region (Zillow-style)
+        $similar = Property::query()
+            ->with('media:id,property_id,path,is_primary')
+            ->where('id', '!=', $property->id)
+            ->where('region', $property->region)
+            ->where('status', 'active')
+            ->orderByDesc('views_count')
+            ->limit(4)
+            ->get();
+
         return Inertia::render('Properties/Show', [
             'property' => $property,
+            'similar' => $similar,
         ]);
     }
 }
