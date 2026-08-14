@@ -33,6 +33,14 @@ const tabs = [
     { key: 'enquiries', label: '💬 Enquiries' },
 ];
 
+const tabTitles = {
+    overview: 'Dashboard — Overview',
+    properties: 'Properties — Manage Listings',
+    enquiries: 'Enquiries — Leads & Messages',
+};
+
+const pageTitle = computed(() => `${tabTitles[activeTab.value]} | Edenire.co.tz`);
+
 function switchTab(key) {
     activeTab.value = key;
     router.get('/dashboard', { tab: key }, { preserveState: true, replace: true });
@@ -164,6 +172,7 @@ function fmt(n) {
 
 <template>
     <AuthenticatedLayout>
+        <Head :title="pageTitle" />
         <template #header>
             <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Dashboard</h2>
         </template>
