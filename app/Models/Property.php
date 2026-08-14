@@ -125,4 +125,39 @@ class Property extends Model
     {
         return number_format($this->price, 0) . ' ' . $this->currency;
     }
+
+    /**
+     * Popular searches — deep links into filtered results, built from real data.
+     * Used on landing, search results and property detail pages for SEO.
+     */
+    public static function popularSearches(): \Illuminate\Support\Collection
+    {
+        $typeLabels = [
+            'residential' => 'Houses',
+            'land' => 'Land',
+            'commercial' => 'Commercial Property',
+            'mixed_use' => 'Mixed-Use Property',
+            'industrial' => 'Industrial Property',
+        ];
+
+        $regions = self::distinct()->pluck('region')->filter()->values()->take(3);
+        $popular = collect();
+
+        foreach ($regions as $region) {
+            $popular->push([
+                'label' => 'All properties in '.$region,
+                'url' => '/properties?region='.urlencode($region),
+            ]);
+            foreach (['residential', 'land'] as $type) {
+                foreach (['sale', 'rent'] as $listing) {
+                    $popular->push([
+                        'label' => $typeLabels[$type].' for '.$listing.' in '.$region,
+                        'url' => '/properties?type='.$type.'&listing='.$listing.'&region='.urlencode($region),
+                    ]);
+                }
+            }
+        }
+
+        return $popular;
+    }
 }

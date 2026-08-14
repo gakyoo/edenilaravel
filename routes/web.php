@@ -23,6 +23,7 @@ Route::get('/', function () {
     return Inertia::render('Landing', [
         'featured' => $featured,
         'favoriteIds' => auth()->check() ? auth()->user()->favorites()->pluck('property_id') : collect(),
+        'popularSearches' => Property::popularSearches(),
         'siteContent' => SiteContent::allMap(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),

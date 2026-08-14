@@ -10,6 +10,7 @@ const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     favoriteIds: Array,
+    popularSearches: Array,
 });
 
 // Editable site content (from SiteContent table) with safe fallbacks
@@ -248,6 +249,22 @@ const features = [
                     💬 Send us a message
                 </a>
                 <p class="text-xs text-white/40 mt-4">Opens WhatsApp — fastest response</p>
+            </div>
+        </section>
+
+        <!-- 🔍 Popular searches -->
+        <section v-if="popularSearches && popularSearches.length" class="max-w-7xl mx-auto px-4 py-14">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Popular Searches</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-6">Browse more properties across Tanzania</p>
+            <div class="flex flex-wrap gap-2">
+                <Link
+                    v-for="s in popularSearches"
+                    :key="s.url"
+                    :href="s.url"
+                    class="px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:border-[#A8E46A] hover:text-[#70A83C] dark:hover:text-[#A8E46A] hover:bg-[#A8E46A]/5 transition"
+                >
+                    {{ s.label }}
+                </Link>
             </div>
         </section>
 

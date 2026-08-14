@@ -101,6 +101,7 @@ class PropertyController extends Controller
             'properties' => $query->paginate(12)->withQueryString(),
             'filters' => $filters,
             'favoriteIds' => $favoriteIds,
+            'popularSearches' => Property::popularSearches(),
             'filterOptions' => [
                 'regions' => Property::distinct()->pluck('region')->filter()->values(),
                 'cities' => Property::distinct()->pluck('city')->filter()->values(),
@@ -131,29 +132,7 @@ class PropertyController extends Controller
             ->get();
 
         // Popular searches — deep links into filtered results, built from real data
-        $typeLabels = [
-            'residential' => 'Houses',
-            'land' => 'Land',
-            'commercial' => 'Commercial Property',
-            'mixed_use' => 'Mixed-Use Property',
-            'industrial' => 'Industrial Property',
-        ];
-        $regions = Property::distinct()->pluck('region')->filter()->values()->take(3);
-        $popularSearches = collect();
-        foreach ($regions as $region) {
-            $popularSearches->push([
-                'label' => 'All properties in '.$region,
-                'url' => '/properties?region='.urlencode($region),
-            ]);
-            foreach (['residential', 'land'] as $type) {
-                foreach (['sale', 'rent'] as $listing) {
-                    $popularSearches->push([
-                        'label' => $typeLabels[$type].' for '.$listing.' in '.$region,
-                        'url' => '/properties?type='.$type.'&listing='.$listing.'&region='.urlencode($region),
-                    ]);
-                }
-            }
-        }
+        $popularSearches = Property::popularSearches();
 
         return Inertia::render('Properties/Show', [
             'property' => $property,

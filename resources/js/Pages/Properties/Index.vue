@@ -10,6 +10,7 @@ const props = defineProps({
     filters: Object,
     filterOptions: Object,
     favoriteIds: Array,
+    popularSearches: Array,
 });
 
 const q = ref(props.filters.q || '');
@@ -332,6 +333,22 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
                 <Link v-if="properties.prev_page_url" :href="properties.prev_page_url" class="px-4 py-2 bg-gray-200 dark:bg-gray-800 dark:text-gray-100 rounded-lg">← Prev</Link>
                 <span class="px-4 py-2 text-sm text-gray-500">{{ properties.current_page }} / {{ properties.last_page }}</span>
                 <Link v-if="properties.next_page_url" :href="properties.next_page_url" class="px-4 py-2 bg-[#A8E46A] text-[#232126] rounded-lg">Next →</Link>
+            </div>
+
+            <!-- 🔍 Popular searches -->
+            <div v-if="popularSearches && popularSearches.length" class="mt-10 bg-white dark:bg-gray-900 rounded-xl shadow p-6">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Popular Searches</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Browse more properties across Tanzania</p>
+                <div class="flex flex-wrap gap-2">
+                    <Link
+                        v-for="s in popularSearches"
+                        :key="s.url"
+                        :href="s.url"
+                        class="px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:border-[#A8E46A] hover:text-[#70A83C] dark:hover:text-[#A8E46A] hover:bg-[#A8E46A]/5 transition"
+                    >
+                        {{ s.label }}
+                    </Link>
+                </div>
             </div>
         </div>
     </div>
