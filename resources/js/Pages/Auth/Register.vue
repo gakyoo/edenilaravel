@@ -2,7 +2,6 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SocialAuthButtons from '@/Components/SocialAuthButtons.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -21,41 +20,49 @@ const form = useForm({
 
 const isAgent = computed(() => form.role === 'agent');
 
-const social = computed(() => $page.props.socialAuth || {});
-
 const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+const social = computed(() => $page.props.socialAuth || {});
+const hasSocial = computed(() => social.value.google || social.value.facebook);
 </script>
 
 <template>
     <GuestLayout>
         <Head title="Register" />
 
-        <!-- Social signup (Google / Facebook) -->
-        <template v-if="social.google || social.facebook">
-            <SocialAuthButtons
-                :show-google="social.google"
-                :show-facebook="social.facebook"
-            />
+        <!-- Heading -->
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Create your account</h2>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Save favorites, book tours &amp; get property updates.
+        </p>
+
+        <!-- Social signup -->
+        <template v-if="hasSocial">
+            <div class="mt-6">
+                <SocialAuthButtons
+                    :show-google="social.google"
+                    :show-facebook="social.facebook"
+                />
+            </div>
             <div class="my-5 flex items-center gap-3">
-                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
                 <span class="text-xs text-gray-400">or sign up with email</span>
-                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
             </div>
         </template>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="mt-2 space-y-4">
             <!-- Account type -->
-            <div class="mt-4">
+            <div>
                 <InputLabel for="role" value="I am a..." />
-
                 <select
                     id="role"
                     v-model="form.role"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                 >
                     <option value="buyer">Buyer — looking for property</option>
                     <option value="agent">Agent — list &amp; manage properties for Edeni Realtors</option>
@@ -66,8 +73,8 @@ const submit = () => {
             </div>
 
             <!-- Agent-only fields -->
-            <div v-if="isAgent" class="mt-4 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4">
-                <div class="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-3">
+            <div v-if="isAgent" class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
+                <div class="mb-3 text-sm font-medium text-emerald-800 dark:text-emerald-300">
                     🏢 Agent details — you'll operate under Edeni Realtors (company-owned listings)
                 </div>
 
@@ -109,7 +116,7 @@ const submit = () => {
             </div>
 
             <!-- Name -->
-            <div class="mt-4">
+            <div>
                 <InputLabel for="name" value="Name" />
                 <TextInput
                     id="name"
@@ -124,7 +131,7 @@ const submit = () => {
             </div>
 
             <!-- Email -->
-            <div class="mt-4">
+            <div>
                 <InputLabel for="email" value="Email" />
                 <TextInput
                     id="email"
@@ -138,7 +145,7 @@ const submit = () => {
             </div>
 
             <!-- Password -->
-            <div class="mt-4">
+            <div>
                 <InputLabel for="password" value="Password" />
                 <TextInput
                     id="password"
@@ -152,7 +159,7 @@ const submit = () => {
             </div>
 
             <!-- Confirm Password -->
-            <div class="mt-4">
+            <div>
                 <InputLabel for="password_confirmation" value="Confirm Password" />
                 <TextInput
                     id="password_confirmation"
@@ -165,18 +172,25 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 dark:text-gray-400 underline hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
-            </div>
+            <!-- Full-width primary CTA -->
+            <button
+                type="submit"
+                :disabled="form.processing"
+                class="w-full rounded-xl bg-[#232126] px-6 py-3 text-sm font-bold text-[#A8E46A] shadow transition hover:bg-black disabled:opacity-50 dark:bg-[#A8E46A] dark:text-[#232126] dark:hover:brightness-110"
+            >
+                {{ form.processing ? 'Creating account…' : 'Create account' }}
+            </button>
         </form>
+
+        <!-- Login prompt -->
+        <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            Already registered?
+            <Link
+                :href="route('login')"
+                class="font-semibold text-[#70A83C] underline-offset-2 hover:underline dark:text-[#A8E46A]"
+            >
+                Log in
+            </Link>
+        </p>
     </GuestLayout>
 </template>
