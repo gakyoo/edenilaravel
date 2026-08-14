@@ -52,7 +52,7 @@ const props = defineProps({
                             </div>
                         </Link>
                         <div class="absolute top-2 right-2">
-                            <FavoriteButton :property-id="property.id" :active="true" variant="icon" />
+                            <FavoriteButton :property-id="property.id" :active="true" />
                         </div>
                     </div>
                     <div class="p-4">

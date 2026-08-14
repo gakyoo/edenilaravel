@@ -200,7 +200,7 @@ const features = [
                         <div class="absolute top-2 right-2" @click.prevent.stop>
                             <FavoriteButton :property-id="p.id"
                                 :active="favoriteIds?.includes(Number(p.id))"
-                                variant="icon" size="sm" />
+                                size="sm" />
                         </div>
                     </div>
                     <div class="p-4">

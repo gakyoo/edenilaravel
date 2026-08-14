@@ -310,7 +310,7 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
                         <div class="absolute top-2 right-2" @click.prevent.stop>
                             <FavoriteButton :property-id="property.id"
                                 :active="favoriteIds?.includes(Number(property.id))"
-                                variant="icon" size="sm" />
+                                size="sm" />
                         </div>
                     </div>
                     <div class="p-4">
