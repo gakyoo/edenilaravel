@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Property extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $appends = ['primary_image_url', 'price_label'];
+    protected $appends = ['primary_image_url', 'price_label', 'slug', 'public_url'];
 
     protected $fillable = [
         'agent_id', 'owner_id',
@@ -40,6 +41,16 @@ class Property extends Model
             'listed_at' => 'datetime',
             'sold_at' => 'datetime',
         ];
+    }
+
+    public function getSlugAttribute(): string
+    {
+        return Str::slug($this->title ?? 'property');
+    }
+
+    public function getPublicUrlAttribute(): string
+    {
+        return '/properties/'.$this->id.'/'.$this->slug;
     }
 
     public function agent()

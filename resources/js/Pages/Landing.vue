@@ -101,7 +101,7 @@ const features = [
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Link v-for="p in featured" :key="p.id" :href="`/properties/${p.id}`"
+                <Link v-for="p in featured" :key="p.id" :href="p.public_url"
                     class="group bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-lg transition overflow-hidden border border-gray-100 dark:border-gray-800">
                     <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.title"
                         class="h-44 w-full object-cover group-hover:opacity-90 transition" />

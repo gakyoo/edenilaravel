@@ -28,7 +28,7 @@ Route::get('/', function () {
 
 // Public property listing (no auth required)
 Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
-Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
+Route::get('/properties/{property}/{slug?}', [PropertyController::class, 'show'])->name('properties.show');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');

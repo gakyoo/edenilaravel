@@ -276,7 +276,7 @@ const details = computed(() => {
                             <Link href="/properties" class="text-sm text-[#70A83C] dark:text-[#A8E46A] font-semibold hover:underline">See all →</Link>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Link v-for="s in similar" :key="s.id" :href="`/properties/${s.id}`"
+                            <Link v-for="s in similar" :key="s.id" :href="s.public_url"
                                 class="group border dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition">
                                 <img v-if="s.primary_image_url" :src="s.primary_image_url" :alt="s.title"
                                     class="h-36 w-full object-cover group-hover:opacity-90 transition" />

@@ -296,7 +296,7 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Link v-for="property in properties.data" :key="property.id" :href="`/properties/${property.id}`"
+                <Link v-for="property in properties.data" :key="property.id" :href="property.public_url"
                     class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden dark:bg-gray-900 dark:shadow-gray-950">
                     <img v-if="property.primary_image_url" :src="property.primary_image_url" :alt="property.title"
                         class="h-48 w-full object-cover" />

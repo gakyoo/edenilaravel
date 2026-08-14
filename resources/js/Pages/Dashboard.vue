@@ -262,7 +262,7 @@ function fmt(n) {
                                     <span class="text-xs px-2 py-1 rounded-full whitespace-nowrap capitalize" :class="statusStyles[p.status]">{{ p.status.replace('_', ' ') }}</span>
                                     <div class="flex gap-1 shrink-0">
                                         <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-xs text-[#A8E46A] hover:underline px-2 py-1 font-semibold">Edit</Link>
-                                        <a :href="`/properties/${p.id}`" target="_blank" class="text-xs text-gray-400 hover:text-gray-600 px-2 py-1">View</a>
+                                        <a :href="p.public_url" target="_blank" class="text-xs text-gray-400 hover:text-gray-600 px-2 py-1">View</a>
                                         <button @click="deleteProperty(p)" class="text-xs text-red-500 hover:text-red-700 px-2 py-1">Delete</button>
                                     </div>
                                 </div>
@@ -451,7 +451,7 @@ function fmt(n) {
                                 <td class="px-4 py-3">
                                     <div class="flex gap-2">
                                         <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-[#A8E46A] hover:underline text-xs font-semibold">Edit</Link>
-                                        <a :href="`/properties/${p.id}`" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
+                                        <a :href="p.public_url" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
                                         <button @click="deleteProperty(p)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
                                     </div>
                                 </td>

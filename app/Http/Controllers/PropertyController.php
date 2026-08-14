@@ -104,8 +104,13 @@ class PropertyController extends Controller
         ]);
     }
 
-    public function show(Property $property)
+    public function show(Request $request, Property $property, ?string $slug = null)
     {
+        // SEO: redirect to canonical URL if the slug doesn't match
+        if ($slug !== $property->slug) {
+            return redirect()->route('properties.show', [$property->id, $property->slug]);
+        }
+
         $property->load('agent:id,name,company_name,phone', 'media');
 
         // Track view (demand analytics)

@@ -106,7 +106,7 @@ const statusColors = {
                             <td class="px-4 py-3">
                                 <div class="flex gap-2">
                                     <Link :href="`/admin/properties/${p.id}/edit`" class="text-[#A8E46A] hover:underline text-xs font-semibold">Edit</Link>
-                                    <a :href="`/properties/${p.id}`" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
+                                    <a :href="p.public_url" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
                                     <button @click="del(p)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
                                 </div>
                             </td>
