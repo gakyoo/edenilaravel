@@ -168,6 +168,21 @@ function formatTZS(value) {
 function fmt(n) {
     return Number(n || 0).toLocaleString();
 }
+
+function timeAgo(dateStr) {
+    if (!dateStr) return 'recently';
+    const then = new Date(dateStr);
+    const now = new Date();
+    const sec = Math.floor((now - then) / 1000);
+    if (sec < 60) return 'just now';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return min + 'm ago';
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return hr + 'h ago';
+    const day = Math.floor(hr / 24);
+    if (day < 30) return day + 'd ago';
+    return then.toLocaleDateString();
+}
 </script>
 
 <template>
@@ -258,6 +273,7 @@ function fmt(n) {
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-gray-900 dark:text-gray-100 truncate">{{ p.title || 'Untitled' }}</div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ p.city }}{{ p.region ? ', ' + p.region : '' }} · {{ p.price_label }}</div>
+                                        <div class="text-[10px] text-gray-400 mt-0.5">🕐 Modified {{ p.updated_at ? timeAgo(p.updated_at) : 'recently' }}</div>
                                     </div>
                                     <span class="text-xs px-2 py-1 rounded-full whitespace-nowrap capitalize" :class="statusStyles[p.status]">{{ p.status.replace('_', ' ') }}</span>
                                     <div class="flex gap-1 shrink-0">

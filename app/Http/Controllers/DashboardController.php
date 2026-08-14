@@ -92,7 +92,7 @@ class DashboardController extends Controller
                     ->orWhere('city', 'like', '%'.$request->q.'%')
                     ->orWhere('region', 'like', '%'.$request->q.'%'));
             })
-            ->latest();
+            ->orderByDesc('updated_at');
 
         $properties = $propertyQuery->paginate(8)->withQueryString();
 
