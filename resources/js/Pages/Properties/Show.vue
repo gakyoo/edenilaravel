@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import PropertyMap from '@/Components/PropertyMap.vue';
 
 const props = defineProps({
     property: Object,
@@ -324,12 +325,17 @@ const details = computed(() => {
                             </div>
                         </div>
 
-                        <!-- Map teaser -->
+                        <!-- Map (OpenStreetMap) -->
                         <div v-if="property.latitude && property.longitude" class="bg-white dark:bg-gray-900 rounded-xl shadow p-6">
                             <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-3">Location</h3>
-                            <div class="rounded-lg bg-gray-100 dark:bg-gray-800 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            <PropertyMap
+                                :lat="property.latitude"
+                                :lng="property.longitude"
+                                :title="property.title || 'Property'"
+                                height="240px"
+                            />
+                            <div class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
                                 📍 {{ property.latitude }}, {{ property.longitude }}
-                                <div class="text-xs mt-1">Map view coming soon</div>
                             </div>
                         </div>
                     </div>
