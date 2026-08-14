@@ -34,6 +34,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            // Social login availability (buttons show only when credentials are configured)
+            'socialAuth' => [
+                'google' => (bool) config('services.google.client_id'),
+                'facebook' => (bool) config('services.facebook.client_id'),
+            ],
         ];
     }
 }

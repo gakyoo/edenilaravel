@@ -3,6 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SocialAuthButtons from '@/Components/SocialAuthButtons.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -20,6 +21,8 @@ const form = useForm({
 
 const isAgent = computed(() => form.role === 'agent');
 
+const social = computed(() => $page.props.socialAuth || {});
+
 const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
@@ -30,6 +33,19 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Register" />
+
+        <!-- Social signup (Google / Facebook) -->
+        <template v-if="social.google || social.facebook">
+            <SocialAuthButtons
+                :show-google="social.google"
+                :show-facebook="social.facebook"
+            />
+            <div class="my-5 flex items-center gap-3">
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+                <span class="text-xs text-gray-400">or sign up with email</span>
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+            </div>
+        </template>
 
         <form @submit.prevent="submit">
             <!-- Account type -->
