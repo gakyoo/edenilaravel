@@ -12,6 +12,7 @@ const props = defineProps({
     property: Object,
     similar: Array,
     favoriteIds: Array,
+    popularSearches: Array,
 });
 
 const isFavorite = computed(() => props.favoriteIds?.includes(Number(props.property.id)));
@@ -406,6 +407,24 @@ const details = computed(() => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔍 Popular searches (deep links into filtered results) -->
+        <div v-if="popularSearches && popularSearches.length" class="max-w-7xl mx-auto px-4 pb-6">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-6">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Popular searches</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Browse more properties across Tanzania</p>
+                <div class="flex flex-wrap gap-2">
+                    <Link
+                        v-for="s in popularSearches"
+                        :key="s.url"
+                        :href="s.url"
+                        class="px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:border-[#A8E46A] hover:text-[#70A83C] dark:hover:text-[#A8E46A] hover:bg-[#A8E46A]/5 transition"
+                    >
+                        {{ s.label }}
+                    </Link>
                 </div>
             </div>
         </div>

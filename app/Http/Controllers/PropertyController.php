@@ -130,10 +130,36 @@ class PropertyController extends Controller
             ->limit(4)
             ->get();
 
+        // Popular searches — deep links into filtered results, built from real data
+        $typeLabels = [
+            'residential' => 'Houses',
+            'land' => 'Land',
+            'commercial' => 'Commercial Property',
+            'mixed_use' => 'Mixed-Use Property',
+            'industrial' => 'Industrial Property',
+        ];
+        $regions = Property::distinct()->pluck('region')->filter()->values()->take(3);
+        $popularSearches = collect();
+        foreach ($regions as $region) {
+            $popularSearches->push([
+                'label' => 'All properties in '.$region,
+                'url' => '/properties?region='.urlencode($region),
+            ]);
+            foreach (['residential', 'land'] as $type) {
+                foreach (['sale', 'rent'] as $listing) {
+                    $popularSearches->push([
+                        'label' => $typeLabels[$type].' for '.$listing.' in '.$region,
+                        'url' => '/properties?type='.$type.'&listing='.$listing.'&region='.urlencode($region),
+                    ]);
+                }
+            }
+        }
+
         return Inertia::render('Properties/Show', [
             'property' => $property,
             'similar' => $similar,
             'favoriteIds' => $request->user()?->favorites()->pluck('property_id') ?? collect(),
+            'popularSearches' => $popularSearches,
         ]);
     }
 
