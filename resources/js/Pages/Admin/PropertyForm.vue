@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import PlaceAutocomplete from '@/Components/PlaceAutocomplete.vue';
 
 const props = defineProps({
     property: Object,
@@ -62,6 +63,17 @@ function onPrimaryChange(e) {
 
 function onGalleryChange(e) {
     galleryPhotos.value = Array.from(e.target.files);
+}
+
+function onPlaceSelected(place) {
+    // Nominatim returns address breakdown + lat/lon — fill the location fields
+    const a = place.address || {};
+    form.address_line = [a.road, a.neighbourhood, a.suburb, a.hamlet, a.village].filter(Boolean).join(', ');
+    form.city = a.city || a.town || a.village || a.suburb || '';
+    form.region = a.state || a.county || '';
+    form.country = a.country || 'Tanzania';
+    form.latitude = place.lat;
+    form.longitude = place.lon;
 }
 
 function submit() {
@@ -133,6 +145,11 @@ function submit() {
                 <!-- Location -->
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-6 space-y-4">
                     <h3 class="font-semibold text-gray-900 dark:text-gray-100">Location</h3>
+                    <div>
+                        <label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">Search address or place (OpenStreetMap)</label>
+                        <PlaceAutocomplete @select="onPlaceSelected" placeholder="e.g. Masaki, Dar es Salaam or Njiro, Arusha..." />
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Pick a suggestion to auto-fill address, city, region, and coordinates.</p>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">City</label>
