@@ -16,7 +16,6 @@ const form = useForm({
     title: props.property?.title || '',
     description: props.property?.description || '',
     agent_id: props.property?.agent_id || '',
-    parcel_number: props.property?.parcel_number || '',
     address_line: props.property?.address_line || '',
     city: props.property?.city || '',
     region: props.property?.region || '',
@@ -67,7 +66,7 @@ function onGalleryChange(e) {
 
 function submit() {
     if (isEdit) {
-        form.post(`/dashboard/properties/${props.property.id}`, {
+        form.put(`/dashboard/properties/${props.property.id}`, {
             forceFormData: true,
             preserveScroll: true,
         });
@@ -119,10 +118,6 @@ function submit() {
                                 <option value="">— Company-owned (no agent) —</option>
                                 <option v-for="a in agents" :key="a.id" :value="a.id">{{ a.company_name || a.name }}</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">Parcel / APN number</label>
-                            <input v-model="form.parcel_number" type="text" class="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700" />
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">Address line</label>

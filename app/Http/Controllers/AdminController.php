@@ -216,7 +216,6 @@ class AdminController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'agent_id' => 'nullable|exists:users,id',
-            'parcel_number' => 'nullable|string|max:255',
             'address_line' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'region' => 'nullable|string|max:255',

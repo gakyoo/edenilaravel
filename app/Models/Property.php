@@ -15,7 +15,7 @@ class Property extends Model
 
     protected $fillable = [
         'agent_id', 'owner_id',
-        'parcel_number', 'title', 'description',
+        'title', 'description',
         'address_line', 'city', 'region', 'country', 'postal_code',
         'legal_description', 'latitude', 'longitude',
         'property_type', 'listing_type',
