@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Models\Property;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Task;
@@ -9,11 +10,17 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    $featured = Property::query()
+        ->active()
+        ->orderByDesc('is_featured')
+        ->orderByDesc('views_count')
+        ->limit(6)
+        ->get();
+
+    return Inertia::render('Landing', [
+        'featured' => $featured,
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
