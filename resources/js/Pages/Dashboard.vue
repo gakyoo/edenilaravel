@@ -448,6 +448,37 @@ function timeAgo(dateStr) {
 
             <!-- ============ TAB: PROPERTIES (merged admin) ============ -->
             <div v-else-if="activeTab === 'properties'" class="space-y-6">
+                <!-- Admin-style distribution cards (top) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">By Status</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span v-for="s in byStatus" :key="s.status" class="px-3 py-1.5 rounded-full text-sm capitalize" :class="statusStyles[s.status] || statusStyles.active">{{ s.status.replace('_', ' ') }}: {{ s.c }}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">By Type</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            <div v-for="t in byType" :key="t.property_type" class="text-center border dark:border-gray-700 rounded-lg p-3">
+                                <div class="text-xl font-bold text-[#A8E46A]">{{ t.c }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ t.property_type.replace('_', ' ') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Top Regions</h3>
+                        <div class="space-y-2">
+                            <div v-for="r in byRegion" :key="r.region" class="flex items-center gap-3">
+                                <span class="w-24 truncate text-sm text-gray-600 dark:text-gray-300">{{ r.region }}</span>
+                                <div class="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-[#A8E46A] rounded-full" :style="{ width: (r.c / Math.max(1, byRegion[0]?.c)) * 100 + '%' }"></div>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ r.c }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5 flex flex-wrap gap-2 items-end">
                     <div class="flex-1 min-w-[200px]">
                         <input v-model="pQ" @keyup.enter="applyPropertyFilters" type="text" placeholder="Search title, city, region..."
@@ -510,37 +541,6 @@ function timeAgo(dateStr) {
                     <Link v-if="properties.prev_page_url" :href="properties.prev_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">← Prev</Link>
                     <span class="px-3 py-1.5 text-sm text-gray-500">{{ properties.current_page }} / {{ properties.last_page }}</span>
                     <Link v-if="properties.next_page_url" :href="properties.next_page_url" class="px-3 py-1.5 bg-white dark:bg-gray-900 rounded-lg text-sm">Next →</Link>
-                </div>
-
-                <!-- Admin-style distribution cards -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
-                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">By Status</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <span v-for="s in byStatus" :key="s.status" class="px-3 py-1.5 rounded-full text-sm capitalize" :class="statusStyles[s.status] || statusStyles.active">{{ s.status.replace('_', ' ') }}: {{ s.c }}</span>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
-                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">By Type</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            <div v-for="t in byType" :key="t.property_type" class="text-center border dark:border-gray-700 rounded-lg p-3">
-                                <div class="text-xl font-bold text-[#A8E46A]">{{ t.c }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ t.property_type.replace('_', ' ') }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
-                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Top Regions</h3>
-                        <div class="space-y-2">
-                            <div v-for="r in byRegion" :key="r.region" class="flex items-center gap-3">
-                                <span class="w-24 truncate text-sm text-gray-600 dark:text-gray-300">{{ r.region }}</span>
-                                <div class="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-[#A8E46A] rounded-full" :style="{ width: (r.c / Math.max(1, byRegion[0]?.c)) * 100 + '%' }"></div>
-                                </div>
-                                <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ r.c }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
