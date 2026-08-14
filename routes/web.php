@@ -11,6 +11,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     $featured = Property::query()
+        ->with('media:id,property_id,path,is_primary')
         ->active()
         ->orderByDesc('is_featured')
         ->orderByDesc('views_count')

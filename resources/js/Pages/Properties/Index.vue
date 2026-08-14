@@ -78,7 +78,9 @@ const listings = [
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Link v-for="property in properties.data" :key="property.id" :href="`/properties/${property.id}`"
                     class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden dark:bg-gray-900 dark:shadow-gray-950">
-                    <div class="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize">
+                    <img v-if="property.primary_image_url" :src="property.primary_image_url" :alt="property.title"
+                        class="h-48 w-full object-cover" />
+                    <div v-else class="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 capitalize">
                         {{ property.property_type }}
                     </div>
                     <div class="p-4">

@@ -50,6 +50,13 @@ class Property extends Model
         return $this->hasMany(PropertyMedia::class);
     }
 
+    public function getPrimaryImageUrlAttribute(): ?string
+    {
+        $primary = $this->media->firstWhere('is_primary', true) ?? $this->media->first();
+
+        return $primary ? asset('storage/'.$primary->path) : null;
+    }
+
     public function enquiries()
     {
         return $this->hasMany(Enquiry::class);

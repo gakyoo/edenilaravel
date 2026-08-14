@@ -184,7 +184,9 @@ function formatTZS(value) {
                         <div class="space-y-3">
                             <div v-for="p in properties.data" :key="p.id"
                                 class="flex items-center gap-4 border dark:border-gray-700 rounded-lg p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                                <div class="h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 text-xs shrink-0 capitalize">
+                                <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.title"
+                                    class="h-14 w-14 rounded-lg object-cover shrink-0" />
+                                <div v-else class="h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 text-xs shrink-0 capitalize">
                                     {{ p.property_type }}
                                 </div>
                                 <div class="flex-1 min-w-0">

@@ -11,7 +11,7 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
         $query = Property::query()
-            ->with('agent:id,name,company_name,phone')
+            ->with(['agent:id,name,company_name,phone', 'media:id,property_id,path,is_primary'])
             ->active()
             ->when($request->filled('type'), fn ($q) => $q->where('property_type', $request->type))
             ->when($request->filled('listing'), fn ($q) => $q->where('listing_type', $request->listing))

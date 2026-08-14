@@ -30,7 +30,9 @@ const waLink = computed(() => {
 
         <div class="max-w-5xl mx-auto px-4 py-8">
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden dark:bg-gray-900 dark:shadow-gray-950">
-                <div class="h-72 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 text-xl capitalize">
+                <img v-if="property.primary_image_url" :src="property.primary_image_url" :alt="property.title"
+                    class="h-72 w-full object-cover" />
+                <div v-else class="h-72 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400 text-xl capitalize">
                     {{ property.property_type }} — Photo coming soon
                 </div>
                 <div class="p-6">
