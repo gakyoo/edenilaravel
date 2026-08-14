@@ -147,9 +147,9 @@ function formatTZS(value) {
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold text-gray-900 dark:text-gray-100">Property Snapshot</h3>
-                            <a :href="'/admin/properties/create'" target="_blank"
+                            <a :href="`/properties`"
                                 class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
-                                + Add Property
+                                Browse Properties
                             </a>
                         </div>
 
@@ -198,7 +198,6 @@ function formatTZS(value) {
                                 </span>
                                 <div class="flex gap-1 shrink-0">
                                     <a :href="`/properties/${p.id}`" target="_blank" class="text-xs text-gray-500 hover:text-emerald-700 dark:hover:text-emerald-400 px-2 py-1">View</a>
-                                    <a :href="`/admin/properties/${p.id}/edit`" target="_blank" class="text-xs text-gray-500 hover:text-emerald-700 dark:hover:text-emerald-400 px-2 py-1">Edit</a>
                                 </div>
                             </div>
                             <div v-if="properties.data.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -345,14 +344,11 @@ function formatTZS(value) {
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                         <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
                         <div class="grid grid-cols-1 gap-2">
-                            <a href="/admin/properties/create" target="_blank" class="bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg px-4 py-2.5 text-sm font-semibold text-center transition">
-                                + Add New Property
+                            <a href="/properties" class="bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg px-4 py-2.5 text-sm font-semibold text-center transition">
+                                🔍 Browse Properties
                             </a>
                             <a :href="'/dashboard/export?status=' + f.status + '&region=' + f.region" class="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-semibold text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                                 ⬇ Export CSV
-                            </a>
-                            <a href="/admin" target="_blank" class="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-semibold text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                                ⚙ Admin Panel
                             </a>
                         </div>
                     </div>
