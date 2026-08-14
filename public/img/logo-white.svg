@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60">
+  <!-- House mark -->
+  <g transform="translate(8, 8)">
+    <rect x="18" y="22" width="28" height="22" rx="2" fill="#A8E46A"/>
+    <path d="M8 26 L32 6 L56 26" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="27" y="32" width="10" height="12" rx="1.5" fill="#232126"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="74" y="40" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" fill="#FFFFFF" letter-spacing="1">Edeni<tspan fill="#A8E46A">RE</tspan></text>
+</svg>

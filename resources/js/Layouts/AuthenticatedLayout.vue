@@ -22,11 +22,7 @@ const navItems = [
         >
             <!-- Brand (no default logo) -->
             <div class="flex items-center gap-3 px-5 h-16 border-b border-white/10">
-                <span class="text-2xl">🏘️</span>
-                <div>
-                    <div class="font-bold text-[#A8E46A] leading-tight">Edenire.co.tz</div>
-                    <div class="text-[10px] text-white/50 tracking-wide">Edeni Realtors · Backend</div>
-                </div>
+                <img src="/img/logo-white.svg" alt="EdeniRE" class="h-8 w-auto" />
             </div>
 
             <!-- Navigation -->

@@ -147,7 +147,7 @@ const hasActiveFilters = computed(() => Object.keys(buildParams()).length > 0);
 
         <header class="bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-950">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-                <Link href="/" class="text-xl font-bold text-[#70A83C] dark:text-[#A8E46A]">Edenire.co.tz</Link>
+                <Link href="/" class="flex items-center"><img src="/img/logo.svg" alt="EdeniRE" class="h-9 w-auto" /></Link>
                 <nav class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
                     <Link href="/properties" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Properties</Link>
                     <Link v-if="$page.props.auth?.user" href="/dashboard" class="hover:text-[#70A83C] dark:hover:text-[#A8E46A]">Dashboard</Link>

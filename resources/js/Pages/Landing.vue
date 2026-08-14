@@ -33,8 +33,7 @@ const features = [
         <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100 dark:bg-gray-950/90 dark:border-gray-800">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 <Link href="/" class="flex items-center gap-2">
-                    <span class="text-2xl">🏘️</span>
-                    <span class="text-xl font-bold text-gray-900 dark:text-gray-100">Edenire<span class="text-emerald-600 dark:text-emerald-400">.co.tz</span></span>
+                    <img src="/img/logo.svg" alt="EdeniRE" class="h-9 w-auto" />
                     <span class="hidden sm:inline text-xs text-gray-400 ml-1">by Edeni Realtors</span>
                 </Link>
                 <nav class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
