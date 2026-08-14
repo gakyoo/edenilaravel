@@ -33,6 +33,7 @@ const fromLabel = ref('');
 const searching = ref(false);
 const geoStatus = ref('');
 const placeQuery = ref('');
+const permState = ref(''); // '' | 'prompt' | 'granted' | 'denied' | 'insecure' | 'unsupported' | 'dismissed'
 
 function formatDistance(m) {
     if (m == null) return '';
@@ -106,20 +107,40 @@ function drawMeasure(lat2, lng2, label) {
     setTimeout(() => marker.openPopup(), 250);
 }
 
-function measureMyLocation() {
+async function checkGeoPermission() {
+    if (!('geolocation' in navigator)) { permState.value = 'unsupported'; return; }
+    if (!window.isSecureContext) { permState.value = 'insecure'; return; }
+    if (!navigator.permissions || typeof navigator.permissions.query !== 'function') return;
+    try {
+        const st = await navigator.permissions.query({ name: 'geolocation' });
+        permState.value = st.state; // 'prompt' | 'granted' | 'denied'
+        st.onchange = () => { permState.value = st.state; };
+    } catch (e) { /* permissions API can throw for geolocation — leave state unknown */ }
+}
+
+function requestLocation() {
     if (!map) return;
-    if (!navigator.geolocation) {
+    if (!('geolocation' in navigator)) {
+        permState.value = 'unsupported';
         geoStatus.value = 'Geolocation not supported on this browser';
         setTimeout(() => { geoStatus.value = ''; }, 4000);
+        return;
+    }
+    if (!window.isSecureContext) {
+        permState.value = 'insecure';
+        geoStatus.value = 'Location blocked: GPS needs HTTPS (or localhost) — use the place search instead';
+        setTimeout(() => { geoStatus.value = ''; }, 6000);
         return;
     }
     geoStatus.value = 'Locating you…';
     navigator.geolocation.getCurrentPosition(
         (pos) => {
             geoStatus.value = '';
+            permState.value = 'granted';
             drawMeasure(pos.coords.latitude, pos.coords.longitude, 'My location');
         },
         (err) => {
+            permState.value = err.code === 1 ? 'denied' : '';
             geoStatus.value = err.code === 1
                 ? 'Location permission denied — use the place search instead'
                 : 'Could not get your location — use the place search instead';
@@ -160,6 +181,7 @@ async function searchPlace() {
 onMounted(() => {
     // Small delay so the container has layout dimensions
     setTimeout(initMap, 50);
+    checkGeoPermission();
 });
 
 onBeforeUnmount(destroyMap);
@@ -188,7 +210,7 @@ watch(() => [props.lat, props.lng], () => {
                     class="bg-white text-gray-800 border border-gray-300 px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:bg-gray-50 transition">
                     🔎 Measure
                 </button>
-                <button type="button" @click="measureMyLocation"
+                <button type="button" @click="requestLocation"
                     class="bg-[#232126] text-[#A8E46A] px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:bg-black transition">
                     📍 My location
                 </button>
@@ -200,6 +222,29 @@ watch(() => [props.lat, props.lng], () => {
             <div v-if="geoStatus"
                 class="mx-auto bg-white/95 text-gray-800 px-3 py-1 rounded-full text-xs shadow">
                 {{ geoStatus }}
+            </div>
+
+            <!-- Location permission ask -->
+            <div v-if="permState === 'prompt'"
+                class="mx-auto bg-[#232126]/95 text-white px-4 py-2 rounded-xl text-sm shadow pointer-events-auto flex items-center gap-3">
+                <span class="text-[#A8E46A]">📍</span>
+                <span>Allow location access to measure your distance to this property?</span>
+                <button type="button" @click="requestLocation"
+                    class="bg-[#A8E46A] text-[#232126] px-2.5 py-1 rounded-lg text-xs font-bold hover:brightness-110 transition">
+                    Allow
+                </button>
+                <button type="button" @click="permState = 'dismissed'"
+                    class="text-gray-400 hover:text-white text-xs">
+                    Not now
+                </button>
+            </div>
+            <div v-if="permState === 'insecure'"
+                class="mx-auto bg-amber-100/95 text-amber-900 px-3 py-1.5 rounded-full text-xs shadow pointer-events-auto">
+                ⚠️ GPS needs HTTPS — use the place search to measure distance
+            </div>
+            <div v-if="permState === 'denied'"
+                class="mx-auto bg-red-50/95 text-red-700 px-3 py-1.5 rounded-full text-xs shadow pointer-events-auto">
+                📍 Location blocked in your browser — allow it in site settings, or use the place search
             </div>
         </div>
     </div>
