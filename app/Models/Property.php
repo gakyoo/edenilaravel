@@ -11,6 +11,8 @@ class Property extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $appends = ['primary_image_url'];
+
     protected $fillable = [
         'agent_id', 'owner_id',
         'parcel_number', 'title', 'description',
@@ -54,7 +56,8 @@ class Property extends Model
     {
         $primary = $this->media->firstWhere('is_primary', true) ?? $this->media->first();
 
-        return $primary ? asset('storage/'.$primary->path) : null;
+        // Relative path (not asset()) so it works from any host (LAN IP, localhost, domain)
+        return $primary ? '/storage/'.$primary->path : null;
     }
 
     public function enquiries()

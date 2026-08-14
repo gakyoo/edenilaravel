@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 
@@ -25,6 +25,46 @@ function prev() {
 function next() {
     activeIndex.value = (activeIndex.value + 1) % images.value.length;
 }
+
+// ---------- Lightbox ----------
+const lightboxOpen = ref(false);
+const lightboxIndex = ref(0);
+
+function openLightbox(index = 0) {
+    if (!images.value.length) return;
+    lightboxIndex.value = index;
+    activeIndex.value = index;
+    lightboxOpen.value = true;
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    lightboxOpen.value = false;
+    document.body.style.overflow = '';
+}
+
+function lightboxPrev() {
+    lightboxIndex.value = (lightboxIndex.value - 1 + images.value.length) % images.value.length;
+    activeIndex.value = lightboxIndex.value;
+}
+
+function lightboxNext() {
+    lightboxIndex.value = (lightboxIndex.value + 1) % images.value.length;
+    activeIndex.value = lightboxIndex.value;
+}
+
+// Keyboard: Esc closes, arrows navigate (bind on mount/unmount)
+function onKey(e) {
+    if (!lightboxOpen.value) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxPrev();
+    if (e.key === 'ArrowRight') lightboxNext();
+}
+onMounted(() => window.addEventListener('keydown', onKey));
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', onKey);
+    document.body.style.overflow = '';
+});
 
 // ---------- WhatsApp ----------
 const waLink = computed(() => {
@@ -103,7 +143,8 @@ const details = computed(() => {
         <div class="max-w-7xl mx-auto px-4 py-6">
             <!-- Photo gallery (Zillow-style hero) -->
             <div class="relative bg-gray-900 rounded-2xl overflow-hidden" v-if="activeImage">
-                <img :src="activeImage" :alt="property.title" class="w-full h-[320px] sm:h-[440px] object-cover" />
+                <img :src="activeImage" :alt="property.title" class="w-full h-[320px] sm:h-[440px] object-cover cursor-zoom-in"
+                    @click="openLightbox(activeIndex)" />
                 <button @click="prev"
                     class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition">‹</button>
                 <button @click="next"
@@ -111,6 +152,10 @@ const details = computed(() => {
                 <span class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full">
                     {{ activeIndex + 1 }} / {{ images.length }}
                 </span>
+                <button @click="openLightbox(activeIndex)"
+                    class="absolute bottom-3 left-3 bg-black/60 hover:bg-black/80 text-white text-xs px-2.5 py-1.5 rounded-full transition">
+                    ⛶ Fullscreen
+                </button>
             </div>
             <div v-else class="h-[320px] sm:h-[440px] bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 capitalize">
                 {{ property.property_type }} — No photos yet
@@ -118,7 +163,7 @@ const details = computed(() => {
 
             <!-- Thumbnail strip -->
             <div v-if="images.length > 1" class="flex gap-2 mt-3 overflow-x-auto pb-1">
-                <button v-for="(img, i) in images" :key="i" @click="activeIndex = i"
+                <button v-for="(img, i) in images" :key="i" @click="openLightbox(i)"
                     class="shrink-0 rounded-lg overflow-hidden transition"
                     :class="i === activeIndex ? 'ring-2 ring-[#25D366]' : 'opacity-70 hover:opacity-100'">
                     <img :src="img" class="h-14 w-20 object-cover" :alt="`Photo ${i + 1}`" />
@@ -273,6 +318,40 @@ const details = computed(() => {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ⛶ Lightbox overlay -->
+        <div v-if="lightboxOpen" class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center" @click.self="closeLightbox">
+            <!-- Close -->
+            <button @click="closeLightbox"
+                class="absolute top-4 right-4 text-white/80 hover:text-white text-4xl w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 transition z-10">
+                ✕
+            </button>
+
+            <!-- Prev / Next -->
+            <button @click="lightboxPrev"
+                class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white rounded-full w-12 h-12 flex items-center justify-center text-3xl transition z-10">
+                ‹
+            </button>
+            <button @click="lightboxNext"
+                class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white rounded-full w-12 h-12 flex items-center justify-center text-3xl transition z-10">
+                ›
+            </button>
+
+            <!-- Image -->
+            <img v-if="images[lightboxIndex]" :src="images[lightboxIndex]" :alt="property.title"
+                class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+
+            <!-- Caption + counter -->
+            <div class="absolute bottom-5 left-0 right-0 text-center text-white/80">
+                <div class="text-sm font-medium">{{ property.title }}</div>
+                <div class="text-xs text-white/50 mt-1">{{ lightboxIndex + 1 }} / {{ images.length }}</div>
+            </div>
+
+            <!-- Hint -->
+            <div class="absolute top-4 left-4 text-white/40 text-xs hidden sm:block">
+                ← → navigate · Esc close
             </div>
         </div>
     </div>
