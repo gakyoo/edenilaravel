@@ -17,7 +17,14 @@ class SocialiteController extends Controller
     {
         abort_unless(in_array($provider, self::PROVIDERS), 404);
 
-        return Socialite::driver($provider)->redirect();
+        try {
+            return Socialite::driver($provider)->redirect();
+        } catch (\Throwable $e) {
+            // Credentials not configured yet — friendly fallback instead of a 500
+            return redirect()->route('login')->withErrors([
+                'email' => ucfirst($provider).' login is not configured yet. Please use email to sign in.',
+            ]);
+        }
     }
 
     public function callback(string $provider)
