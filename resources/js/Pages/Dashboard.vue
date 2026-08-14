@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import ThemeToggle from '@/Components/ThemeToggle.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 
@@ -25,13 +24,19 @@ const props = defineProps({
     enquiryFilters: Object,
 });
 
-// ---------- Tabs (merged admin + dashboard) ----------
-const activeTab = ref('overview');
+// ---------- Tabs (merged admin + dashboard) — deep-linkable via ?tab= ----------
+const urlTab = new URL(window.location.href).searchParams.get('tab');
+const activeTab = ref(['overview', 'properties', 'enquiries'].includes(urlTab) ? urlTab : 'overview');
 const tabs = [
     { key: 'overview', label: '📊 Overview' },
     { key: 'properties', label: '🏠 Properties' },
     { key: 'enquiries', label: '💬 Enquiries' },
 ];
+
+function switchTab(key) {
+    activeTab.value = key;
+    router.get('/dashboard', { tab: key }, { preserveState: true, replace: true });
+}
 
 // ---------- Overview filters ----------
 const q = ref(props.filters.q || '');
@@ -160,15 +165,12 @@ function fmt(n) {
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h2>
-                <ThemeToggle />
-            </div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Dashboard</h2>
         </template>
 
         <!-- Tabs -->
         <div class="flex gap-2 flex-wrap bg-white dark:bg-gray-900 rounded-xl shadow p-2 mt-4">
-            <button v-for="t in tabs" :key="t.key" @click="activeTab = t.key"
+            <button v-for="t in tabs" :key="t.key" @click="switchTab(t.key)"
                 class="px-4 py-2 rounded-lg text-sm font-semibold transition"
                 :class="activeTab === t.key ? 'bg-[#A8E46A] text-[#232126]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'">
                 {{ t.label }}

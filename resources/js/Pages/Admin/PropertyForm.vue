@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import ThemeToggle from '@/Components/ThemeToggle.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -85,10 +84,7 @@ function submit() {
     <AuthenticatedLayout>
         <Head :title="`${isEdit ? 'Edit' : 'Create'} Property | Edenire.co.tz`" />
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ isEdit ? 'Edit Property' : 'Create Property' }}</h2>
-                <ThemeToggle />
-            </div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ isEdit ? 'Edit Property' : 'Create Property' }}</h2>
         </template>
 
         <div class="py-8 max-w-4xl">
