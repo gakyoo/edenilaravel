@@ -364,6 +364,29 @@ class DashboardController extends Controller
         return back()->with('success', 'Property deleted.');
     }
 
+    /**
+     * Quick status update from the dashboard table (e.g. mark as sold).
+     */
+    public function updatePropertyStatus(Request $request, Property $property)
+    {
+        $data = $request->validate([
+            'status' => 'required|in:active,pending,sold,rented,off_market',
+        ]);
+
+        $property->status = $data['status'];
+
+        // Track when it sold/rented (used by analytics and listings)
+        if (in_array($data['status'], ['sold', 'rented'])) {
+            $property->sold_at = $property->sold_at ?? now();
+        } else {
+            $property->sold_at = null;
+        }
+
+        $property->save();
+
+        return back()->with('success', 'Property marked as '.str_replace('_', ' ', $data['status']).'.');
+    }
+
     public function updateEnquiry(Request $request, Enquiry $enquiry)
     {
         $enquiry->update($request->validate([

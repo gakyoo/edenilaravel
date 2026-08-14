@@ -67,6 +67,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/dashboard/properties', [DashboardController::class, 'storeProperty'])->name('dashboard.properties.store');
     Route::get('/dashboard/properties/{property}/edit', [DashboardController::class, 'editProperty'])->name('dashboard.properties.edit');
     Route::put('/dashboard/properties/{property}', [DashboardController::class, 'updateProperty'])->name('dashboard.properties.update');
+    Route::patch('/dashboard/properties/{property}/status', [DashboardController::class, 'updatePropertyStatus'])->name('dashboard.properties.status');
     Route::delete('/dashboard/properties/{property}', [DashboardController::class, 'destroyProperty'])->name('dashboard.properties.destroy');
 
     // Enquiry management (was admin)

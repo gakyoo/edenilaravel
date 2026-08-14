@@ -88,6 +88,16 @@ function deleteProperty(property) {
     }
 }
 
+function setPropertyStatus(property, status) {
+    router.patch(`/dashboard/properties/${property.id}/status`, { status }, { preserveScroll: true });
+}
+
+function markSold(property) {
+    if (confirm(`Mark "${property.title}" as sold?`)) {
+        setPropertyStatus(property, 'sold');
+    }
+}
+
 // ---------- Enquiry management (merged admin) ----------
 const eQ = ref(props.enquiryFilters.eq || '');
 const eStatus = ref(props.enquiryFilters.estatus || '');
@@ -559,7 +569,11 @@ function timeAgo(dateStr) {
                                 <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs capitalize" :class="statusStyles[p.status]">{{ p.status.replace('_', ' ') }}</span></td>
                                 <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ p.views_count }}</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex gap-2">
+                                    <div class="flex gap-2 items-center">
+                                        <button v-if="p.status !== 'sold' && p.status !== 'rented'" @click="markSold(p)"
+                                            class="text-xs px-2 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 font-semibold">
+                                            Sold
+                                        </button>
                                         <Link :href="`/dashboard/properties/${p.id}/edit`" class="text-[#A8E46A] hover:underline text-xs font-semibold">Edit</Link>
                                         <a :href="p.public_url" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
                                         <button @click="deleteProperty(p)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
