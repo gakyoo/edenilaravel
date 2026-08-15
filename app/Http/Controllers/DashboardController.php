@@ -40,6 +40,15 @@ class DashboardController extends Controller
             'open_tasks' => Task::where('user_id', $user->id)->where('status', '!=', 'done')->count(),
         ];
 
+        // ---------- Avg time from listing to closing (sale/rent) ----------
+        $closedProperties = Property::whereIn('status', ['sold', 'rented'])
+            ->whereNotNull('sold_at')
+            ->get()
+            ->map(fn ($p) => abs($p->sold_at->diffInDays($p->listed_at ?? $p->created_at)));
+        $metrics['avg_days_to_close'] = $closedProperties->isNotEmpty()
+            ? round($closedProperties->avg())
+            : null;
+
         // ---------- Recent activity feed ----------
         $activity = collect();
 
@@ -173,6 +182,7 @@ class DashboardController extends Controller
                 'title' => \Illuminate\Support\Str::limit($p->title, 28),
                 'views' => $p->views_count,
                 'enquiries' => $p->enquiries_count,
+                'url' => $p->public_url,
             ]);
 
         $viewsByStatus = Property::select('status', DB::raw('SUM(views_count) as views'))

@@ -286,7 +286,7 @@ function timeAgo(dateStr) {
                 </div>
 
                 <!-- 📊 Key metrics (dashboard + admin KPIs merged) -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">Total Properties</div>
                         <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ fmt(metrics.total_properties) }}</div>
@@ -303,9 +303,9 @@ function timeAgo(dateStr) {
                         <div class="text-xs text-gray-400">{{ formatTZS(adminKpis.usd_value) }} USD</div>
                     </div>
                     <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Engagement</div>
-                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ fmt(metrics.total_views) }}</div>
-                        <div class="text-xs text-gray-400">{{ fmt(metrics.new_enquiries) }} new enquiries · {{ fmt(adminKpis.total_users) }} users</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Avg Days to Close</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ metrics.avg_days_to_close != null ? metrics.avg_days_to_close + ' days' : '—' }}</div>
+                        <div class="text-xs text-gray-400">listing → {{ fmt(metrics.sold) }} sold/rented</div>
                     </div>
                 </div>
 
@@ -368,12 +368,14 @@ function timeAgo(dateStr) {
                         <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
                             <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-4">Top-Performing Listings</h3>
                             <div class="space-y-3">
-                                <div v-for="t in topListings" :key="t.title" class="flex items-center gap-3">
-                                    <div class="w-40 truncate text-sm text-gray-600 dark:text-gray-300">{{ t.title }}</div>
-                                    <div class="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                        <div class="h-full bg-[#A8E46A] rounded-full transition-all" :style="{ width: (t.views / maxViews) * 100 + '%' }"></div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 w-20 text-right">{{ fmt(t.views) }} views · {{ fmt(t.enquiries) }} inq.</div>
+                                <div v-for="t in topListings" :key="t.title">
+                                    <Link :href="t.url" class="flex items-center gap-3 group">
+                                        <div class="w-40 truncate text-sm text-gray-600 dark:text-gray-300 group-hover:text-[#70A83C] dark:group-hover:text-[#A8E46A] group-hover:underline">{{ t.title }}</div>
+                                        <div class="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div class="h-full bg-[#A8E46A] rounded-full transition-all group-hover:bg-[#8CC84F]" :style="{ width: (t.views / maxViews) * 100 + '%' }"></div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 w-20 text-right">{{ fmt(t.views) }} views · {{ fmt(t.enquiries) }} inq.</div>
+                                    </Link>
                                 </div>
                                 <div v-if="topListings.length === 0" class="text-sm text-gray-400">No views yet — share your listings!</div>
                             </div>

@@ -2,8 +2,10 @@
 import { ref, computed } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import SiteFooter from '@/Components/SiteFooter.vue';
+import { useTheme } from '@/composables/useTheme';
 import { Link, usePage } from '@inertiajs/vue3';
 
+const { theme } = useTheme();
 const showingSidebar = ref(false);
 const page = usePage();
 const isAdmin = computed(() => page.props.auth?.user?.role === 'admin');
@@ -30,12 +32,12 @@ const navItems = computed(() => {
     <div class="min-h-screen bg-[#EBEBEB] dark:bg-[#232126]">
         <!-- Sidebar -->
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 bg-[#232126] dark:bg-[#0D0E0F] text-white transform transition-transform duration-200 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-[#0D0E0F] text-gray-900 dark:text-white border-r border-gray-200 dark:border-r-0 transform transition-transform duration-200 lg:translate-x-0"
             :class="showingSidebar ? 'translate-x-0' : '-translate-x-full'"
         >
             <!-- Brand (no default logo) -->
-            <div class="flex items-center gap-3 px-5 h-16 border-b border-white/10">
-                <img src="/img/logo-white.svg" alt="EdeniRE" class="h-8 w-auto" />
+            <div class="flex items-center gap-3 px-5 h-16 border-b border-gray-200 dark:border-white/10">
+                <img :src="theme === 'dark' ? '/img/logo-white.svg' : '/img/logo.svg'" alt="EdeniRE" class="h-8 w-auto" />
             </div>
 
             <!-- Navigation -->
@@ -47,7 +49,7 @@ const navItems = computed(() => {
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition"
                     :class="item.active($page.url)
                         ? 'bg-[#A8E46A] text-[#232126]'
-                        : 'text-white/70 hover:bg-white/10 hover:text-white'"
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white'"
                     @click="showingSidebar = false"
                 >
                     <span class="text-base">{{ item.icon }}</span>
@@ -56,22 +58,22 @@ const navItems = computed(() => {
             </nav>
 
             <!-- User footer -->
-            <div class="absolute bottom-0 inset-x-0 p-4 border-t border-white/10">
+            <div class="absolute bottom-0 inset-x-0 p-4 border-t border-gray-200 dark:border-white/10">
                 <div class="flex items-center gap-3">
                     <div class="h-9 w-9 rounded-full bg-[#A8E46A] text-[#232126] flex items-center justify-center font-bold">
                         {{ ($page.props.auth.user.name || 'U').charAt(0).toUpperCase() }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <div class="text-sm font-medium text-white truncate">{{ $page.props.auth.user.name }}</div>
-                        <div class="text-[11px] text-white/50 truncate">{{ $page.props.auth.user.email }}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $page.props.auth.user.name }}</div>
+                        <div class="text-[11px] text-gray-500 dark:text-white/50 truncate">{{ $page.props.auth.user.email }}</div>
                     </div>
                 </div>
                 <div class="mt-3 space-y-1">
-                    <Link href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/70 hover:bg-white/10 hover:text-white transition">
+                    <Link href="/profile" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white transition">
                         ⚙️ Profile
                     </Link>
                     <Link href="/logout" method="post" as="button"
-                        class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-300 hover:bg-red-500/10 transition">
+                        class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10 transition">
                         🚪 Log Out
                     </Link>
                 </div>
